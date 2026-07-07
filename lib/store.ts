@@ -73,7 +73,13 @@ interface DB {
   subscribers: Subscriber[];
 }
 
-const DB_PATH = path.join(process.cwd(), ".data", "store.json");
+// Vercel's serverless functions run on a read-only filesystem — only /tmp is
+// writable, and it resets between invocations, so data won't persist reliably
+// in production. This keeps the demo from crashing; real persistence needs a
+// hosted database (see lib/store.ts migration note before going live for real).
+const DB_PATH = process.env.VERCEL
+  ? path.join("/tmp", "oaklen-data", "store.json")
+  : path.join(process.cwd(), ".data", "store.json");
 
 function seedProducts(): StoredProduct[] {
   return SEED_PRODUCTS.map((p) => ({ ...p, active: true, createdAt: "2026-05-01T09:00:00Z" }));
