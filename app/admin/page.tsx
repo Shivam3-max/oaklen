@@ -101,6 +101,12 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {data.demoMode && (
+        <p className="label mt-6 border border-brass bg-bone/60 px-4 py-3 text-[10px] text-walnut">
+          Demo mode — no database connected. Changes here live only in server memory and can reset at any time. Add DATABASE_URL to switch to the real database.
+        </p>
+      )}
+
       {tab === "overview" && <OverviewTab data={data} />}
       {tab === "orders" && <OrdersTab data={data} act={act} />}
       {tab === "products" && <ProductsTab data={data} act={act} />}

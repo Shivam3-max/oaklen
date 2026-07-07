@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   const [orders, partners, products, enquiries, subscribers] = await Promise.all([
     listOrders(), listPartners(), listProducts(true), listEnquiries(), listSubscribers(),
   ]);
-  return NextResponse.json({ orders, partners, products, enquiries, subscribers });
+  return NextResponse.json({ orders, partners, products, enquiries, subscribers, demoMode: !process.env.DATABASE_URL });
 }
 
 export async function POST(req: NextRequest) {

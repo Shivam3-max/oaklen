@@ -8,6 +8,7 @@ export interface AdminData {
   products: StoredProduct[];
   enquiries: Enquiry[];
   subscribers: Subscriber[];
+  demoMode?: boolean;
 }
 
 export type Act = (body: Record<string, unknown>) => Promise<string | null>;
