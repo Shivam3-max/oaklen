@@ -4,10 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3461",
-    "build": "next build",
-    "start": "next start -p 3461"
+    "build": "prisma generate && next build",
+    "start": "next start -p 3461",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "lenis": "^1.1.17",
     "next": "^15.5.18",
     "react": "^19.1.0",
@@ -18,10 +23,15 @@
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "prisma": "^6.19.3",
     "tailwindcss": "^4.1.7",
+    "tsx": "^4.19.2",
     "typescript": "^5.8.3"
   },
   "overrides": {
     "postcss": "^8.5.10"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

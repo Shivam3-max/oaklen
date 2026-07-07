@@ -1,6 +1,6 @@
-import { promises as fs } from "fs";
-import path from "path";
-import { PRODUCTS as SEED_PRODUCTS, Product } from "@/data/products";
+import { prisma } from "./prisma";
+import type { Product } from "@/data/products";
+import type { Prisma } from "@prisma/client";
 
 export interface OrderItem {
   slug: string;
@@ -65,88 +65,81 @@ export interface Subscriber {
   createdAt: string;
 }
 
-interface DB {
-  orders: Order[];
-  partners: Partner[];
-  products: StoredProduct[];
-  enquiries: Enquiry[];
-  subscribers: Subscriber[];
+/* ---------- status <-> Prisma enum mapping ---------- */
+// the app uses hyphenated strings ("in-atelier", "swatch-kit") for readability;
+// MySQL enum identifiers can't contain hyphens, so Prisma stores underscores.
+
+const toDbOrderStatus = (s: Order["status"]) => s.replace("-", "_") as "reserved" | "in_atelier" | "delivered";
+const fromDbOrderStatus = (s: string) => s.replace("_", "-") as Order["status"];
+const toDbEnquiryKind = (k: Enquiry["kind"]) => k.replace("-", "_") as "consultation" | "swatch_kit";
+const fromDbEnquiryKind = (k: string) => k.replace("_", "-") as Enquiry["kind"];
+
+/* ---------- row -> app-shape mappers ---------- */
+
+type OrderRow = Prisma.OrderGetPayload<{ include: { items: true } }>;
+
+function mapOrder(row: OrderRow): Order {
+  return {
+    id: row.id,
+    subtotal: row.subtotal,
+    paymentMode: row.paymentMode,
+    paidNow: row.paidNow,
+    balanceDue: row.balanceDue,
+    refCode: row.refCode ?? undefined,
+    status: fromDbOrderStatus(row.status),
+    createdAt: row.createdAt.toISOString(),
+    customer: { name: row.custName, phone: row.custPhone, email: row.custEmail, address: row.custAddress, pin: row.custPin },
+    items: row.items.map((it) => ({
+      slug: it.slug, name: it.name, line: it.line, qty: it.qty, price: it.price,
+      fabric: it.fabric ?? undefined,
+    })),
+  };
 }
 
-// Vercel's serverless functions run on a read-only filesystem — only /tmp is
-// writable, and it resets between invocations, so data won't persist reliably
-// in production. This keeps the demo from crashing; real persistence needs a
-// hosted database (see lib/store.ts migration note before going live for real).
-const DB_PATH = process.env.VERCEL
-  ? path.join("/tmp", "oaklen-data", "store.json")
-  : path.join(process.cwd(), ".data", "store.json");
+type PartnerRow = Prisma.PartnerGetPayload<{ include: { referrals: true } }>;
 
-function seedProducts(): StoredProduct[] {
-  return SEED_PRODUCTS.map((p) => ({ ...p, active: true, createdAt: "2026-05-01T09:00:00Z" }));
+function mapPartner(row: PartnerRow): Partner {
+  return {
+    code: row.code, name: row.name, firm: row.firm ?? undefined, tier: row.tier,
+    rate: row.rate, email: row.email, phone: row.phone, clicks: row.clicks,
+    createdAt: row.createdAt.toISOString(),
+    referrals: row.referrals.map((r) => ({
+      orderId: r.orderId, orderValue: r.orderValue, commission: r.commission,
+      status: r.status, date: r.date.toISOString(),
+    })),
+  };
 }
 
-const SEED: DB = {
-  orders: [],
-  products: seedProducts(),
-  enquiries: [],
-  subscribers: [],
-  partners: [
-    {
-      code: "ARJUN10", name: "Arjun Mehta", firm: "Studio Mehta Architects", tier: "trade", rate: 10,
-      email: "arjun@studiomehta.in", phone: "+91 98100 00000", clicks: 142, createdAt: "2026-05-12T09:00:00Z",
-      referrals: [
-        { orderId: "OAK-2417", orderValue: 296000, commission: 29600, status: "paid", date: "2026-05-28T10:00:00Z" },
-        { orderId: "OAK-2561", orderValue: 168000, commission: 16800, status: "confirmed", date: "2026-06-14T10:00:00Z" },
-        { orderId: "OAK-2688", orderValue: 424000, commission: 42400, status: "pending", date: "2026-07-01T10:00:00Z" },
-      ],
-    },
-    {
-      code: "RAVIBUILD", name: "Ravi Khanna", firm: "Khanna Constructions", tier: "build", rate: 7,
-      email: "ravi@khannabuild.in", phone: "+91 98200 00000", clicks: 61, createdAt: "2026-06-02T09:00:00Z",
-      referrals: [
-        { orderId: "OAK-2590", orderValue: 342000, commission: 23940, status: "confirmed", date: "2026-06-20T10:00:00Z" },
-      ],
-    },
-    {
-      code: "MEERA5", name: "Meera Nair", tier: "circle", rate: 5,
-      email: "meera.n@gmail.com", phone: "+91 99300 00000", clicks: 18, createdAt: "2026-06-18T09:00:00Z",
-      referrals: [],
-    },
-  ],
-};
-
-async function load(): Promise<DB> {
-  try {
-    const raw = await fs.readFile(DB_PATH, "utf8");
-    const db = JSON.parse(raw) as DB;
-    // migrate stores written before products/enquiries/subscribers existed
-    let dirty = false;
-    if (!db.products) { db.products = seedProducts(); dirty = true; }
-    if (!db.enquiries) { db.enquiries = []; dirty = true; }
-    if (!db.subscribers) { db.subscribers = []; dirty = true; }
-    if (dirty) await save(db);
-    return db;
-  } catch {
-    await save(SEED);
-    return structuredClone(SEED);
-  }
+function mapProduct(row: Prisma.ProductGetPayload<object>): StoredProduct {
+  return {
+    slug: row.slug, name: row.name, line: row.line, category: row.category, type: row.type,
+    style: row.style, silhouette: row.silhouette as StoredProduct["silhouette"], price: row.price,
+    dims: row.dims, wood: row.wood, fabrics: row.fabrics as string[], leadDays: row.leadDays,
+    story: row.story, plate: row.plate, signature: row.signature, active: row.active,
+    createdAt: row.createdAt.toISOString(),
+  };
 }
 
-async function save(db: DB) {
-  await fs.mkdir(path.dirname(DB_PATH), { recursive: true });
-  await fs.writeFile(DB_PATH, JSON.stringify(db, null, 2), "utf8");
+function mapEnquiry(row: Prisma.EnquiryGetPayload<object>): Enquiry {
+  return {
+    id: row.id, kind: fromDbEnquiryKind(row.kind), name: row.name, phone: row.phone,
+    note: row.note ?? undefined, status: row.status, createdAt: row.createdAt.toISOString(),
+  };
 }
 
 /* ---------- products ---------- */
 
 export async function listProducts(includeInactive = false) {
-  const db = await load();
-  return includeInactive ? db.products : db.products.filter((p) => p.active);
+  const rows = await prisma.product.findMany({
+    where: includeInactive ? undefined : { active: true },
+    orderBy: { plate: "asc" },
+  });
+  return rows.map(mapProduct);
 }
 
 export async function getStoredProduct(slug: string) {
-  const db = await load();
-  return db.products.find((p) => p.slug === slug && p.active) ?? null;
+  const row = await prisma.product.findFirst({ where: { slug, active: true } });
+  return row ? mapProduct(row) : null;
 }
 
 function slugify(name: string, line: string) {
@@ -154,175 +147,204 @@ function slugify(name: string, line: string) {
 }
 
 export async function createProduct(input: Omit<Product, "slug" | "plate">) {
-  const db = await load();
-  let slug = slugify(input.name, input.line);
+  const base = slugify(input.name, input.line);
+  let slug = base;
   let n = 2;
-  while (db.products.some((p) => p.slug === slug)) slug = `${slugify(input.name, input.line)}-${n++}`;
-  const plate = Math.max(0, ...db.products.map((p) => p.plate)) + 1;
-  const product: StoredProduct = { ...input, slug, plate, active: true, createdAt: new Date().toISOString() };
-  db.products.push(product);
-  await save(db);
-  return product;
+  while (await prisma.product.findUnique({ where: { slug } })) slug = `${base}-${n++}`;
+
+  const maxPlate = await prisma.product.aggregate({ _max: { plate: true } });
+  const plate = (maxPlate._max.plate ?? 0) + 1;
+
+  const row = await prisma.product.create({
+    data: { ...input, slug, plate, fabrics: input.fabrics, active: true },
+  });
+  return mapProduct(row);
 }
 
 export async function updateProduct(slug: string, patch: Partial<Omit<StoredProduct, "slug" | "createdAt">>) {
-  const db = await load();
-  const p = db.products.find((x) => x.slug === slug);
-  if (!p) return null;
-  Object.assign(p, patch);
-  await save(db);
-  return p;
+  try {
+    const row = await prisma.product.update({
+      where: { slug },
+      data: { ...patch, fabrics: patch.fabrics as Prisma.InputJsonValue | undefined },
+    });
+    return mapProduct(row);
+  } catch {
+    return null;
+  }
 }
 
 export async function deleteProduct(slug: string) {
-  const db = await load();
-  const before = db.products.length;
-  db.products = db.products.filter((p) => p.slug !== slug);
-  await save(db);
-  return db.products.length < before;
+  try {
+    await prisma.product.delete({ where: { slug } });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /* ---------- orders ---------- */
 
+function randomOrderId() {
+  return "OAK-" + String(2700 + Math.floor(Math.random() * 90000));
+}
+
 export async function createOrder(order: Omit<Order, "id" | "createdAt" | "status">): Promise<Order> {
-  const db = await load();
-  const id = "OAK-" + String(2700 + db.orders.length + Math.floor(Math.random() * 40));
-  const full: Order = { ...order, id, status: "reserved", createdAt: new Date().toISOString() };
-  db.orders.push(full);
-  if (order.refCode) {
-    const partner = db.partners.find((p) => p.code === order.refCode!.toUpperCase());
-    if (partner) {
-      partner.referrals.push({
-        orderId: id,
-        orderValue: order.subtotal,
-        commission: Math.round((order.subtotal * partner.rate) / 100),
-        status: "pending",
-        date: full.createdAt,
-      });
+  const refCode = order.refCode?.toUpperCase();
+
+  const row = await prisma.$transaction(async (tx) => {
+    let id = randomOrderId();
+    for (let attempt = 0; attempt < 5; attempt++) {
+      if (!(await tx.order.findUnique({ where: { id } }))) break;
+      id = randomOrderId();
     }
-  }
-  await save(db);
-  return full;
+    const created = await tx.order.create({
+      data: {
+        id,
+        subtotal: order.subtotal,
+        paymentMode: order.paymentMode,
+        paidNow: order.paidNow,
+        balanceDue: order.balanceDue,
+        custName: order.customer.name,
+        custPhone: order.customer.phone,
+        custEmail: order.customer.email,
+        custAddress: order.customer.address,
+        custPin: order.customer.pin,
+        refCode,
+        items: { create: order.items.map((it) => ({ ...it })) },
+      },
+      include: { items: true },
+    });
+
+    if (refCode) {
+      const partner = await tx.partner.findUnique({ where: { code: refCode } });
+      if (partner) {
+        await tx.referral.create({
+          data: {
+            partnerCode: partner.code,
+            orderId: id,
+            orderValue: order.subtotal,
+            commission: Math.round((order.subtotal * partner.rate) / 100),
+            status: "pending",
+          },
+        });
+      }
+    }
+    return created;
+  });
+
+  return mapOrder(row);
 }
 
 export async function getOrder(id: string) {
-  const db = await load();
-  return db.orders.find((o) => o.id === id) ?? null;
+  const row = await prisma.order.findUnique({ where: { id }, include: { items: true } });
+  return row ? mapOrder(row) : null;
 }
 
 export async function ordersByPhone(phone: string) {
-  const db = await load();
   const digits = phone.replace(/\D/g, "").slice(-10);
-  return db.orders.filter((o) => o.customer.phone.replace(/\D/g, "").endsWith(digits));
+  const rows = await prisma.order.findMany({ include: { items: true }, orderBy: { createdAt: "desc" } });
+  return rows.filter((o) => o.custPhone.replace(/\D/g, "").endsWith(digits)).map(mapOrder);
 }
 
 export async function listOrders() {
-  const db = await load();
-  return [...db.orders].reverse();
+  const rows = await prisma.order.findMany({ include: { items: true }, orderBy: { createdAt: "desc" } });
+  return rows.map(mapOrder);
 }
 
 export async function setOrderStatus(id: string, status: Order["status"]) {
-  const db = await load();
-  const order = db.orders.find((o) => o.id === id);
-  if (!order) return null;
-  order.status = status;
-  // a delivered piece confirms the partner's commission
-  if (status === "delivered") {
-    for (const p of db.partners) {
-      const ref = p.referrals.find((r) => r.orderId === id && r.status === "pending");
-      if (ref) ref.status = "confirmed";
-    }
+  const dbStatus = toDbOrderStatus(status);
+  try {
+    const row = await prisma.$transaction(async (tx) => {
+      const updated = await tx.order.update({ where: { id }, data: { status: dbStatus }, include: { items: true } });
+      // a delivered piece confirms the partner's commission
+      if (status === "delivered") {
+        await tx.referral.updateMany({ where: { orderId: id, status: "pending" }, data: { status: "confirmed" } });
+      }
+      return updated;
+    });
+    return mapOrder(row);
+  } catch {
+    return null;
   }
-  await save(db);
-  return order;
 }
 
 /* ---------- partners ---------- */
 
 export async function listPartners() {
-  const db = await load();
-  return db.partners;
+  const rows = await prisma.partner.findMany({ include: { referrals: { orderBy: { date: "asc" } } } });
+  return rows.map(mapPartner);
 }
 
 export async function getPartner(code: string) {
-  const db = await load();
-  return db.partners.find((p) => p.code === code.toUpperCase()) ?? null;
+  const row = await prisma.partner.findUnique({
+    where: { code: code.toUpperCase() },
+    include: { referrals: { orderBy: { date: "asc" } } },
+  });
+  return row ? mapPartner(row) : null;
 }
 
 export async function trackClick(code: string) {
-  const db = await load();
-  const p = db.partners.find((x) => x.code === code.toUpperCase());
-  if (p) {
-    p.clicks += 1;
-    await save(db);
+  try {
+    await prisma.partner.update({ where: { code: code.toUpperCase() }, data: { clicks: { increment: 1 } } });
+    return true;
+  } catch {
+    return false;
   }
-  return !!p;
 }
 
 export async function setReferralStatus(code: string, orderId: string, status: Referral["status"]) {
-  const db = await load();
-  const partner = db.partners.find((p) => p.code === code.toUpperCase());
-  const ref = partner?.referrals.find((r) => r.orderId === orderId);
-  if (!partner || !ref) return null;
-  ref.status = status;
-  await save(db);
-  return ref;
+  const partner = await prisma.partner.findUnique({ where: { code: code.toUpperCase() } });
+  if (!partner) return null;
+  const ref = await prisma.referral.findFirst({ where: { partnerCode: partner.code, orderId } });
+  if (!ref) return null;
+  const updated = await prisma.referral.update({ where: { id: ref.id }, data: { status } });
+  return { orderId: updated.orderId, orderValue: updated.orderValue, commission: updated.commission, status: updated.status, date: updated.date.toISOString() };
 }
 
 export async function createPartner(input: { name: string; firm?: string; tier: Partner["tier"]; email: string; phone: string }) {
-  const db = await load();
   const base = input.name.split(" ")[0].toUpperCase().replace(/[^A-Z]/g, "").slice(0, 8) || "OAKLEN";
   let code = base;
   let n = 1;
-  while (db.partners.some((p) => p.code === code)) {
-    code = base + String(n++);
-  }
+  while (await prisma.partner.findUnique({ where: { code } })) code = base + String(n++);
+
   const rate = input.tier === "trade" ? 10 : input.tier === "build" ? 7 : 5;
-  const partner: Partner = { ...input, code, rate, clicks: 0, referrals: [], createdAt: new Date().toISOString() };
-  db.partners.push(partner);
-  await save(db);
-  return partner;
+  const row = await prisma.partner.create({
+    data: { code, name: input.name, firm: input.firm, tier: input.tier, rate, email: input.email, phone: input.phone },
+    include: { referrals: true },
+  });
+  return mapPartner(row);
 }
 
 /* ---------- enquiries & subscribers ---------- */
 
 export async function createEnquiry(input: { kind: Enquiry["kind"]; name: string; phone: string; note?: string }) {
-  const db = await load();
-  const enquiry: Enquiry = {
-    ...input,
-    id: "ENQ-" + String(100 + db.enquiries.length),
-    status: "new",
-    createdAt: new Date().toISOString(),
-  };
-  db.enquiries.push(enquiry);
-  await save(db);
-  return enquiry;
+  const count = await prisma.enquiry.count();
+  const row = await prisma.enquiry.create({
+    data: { id: "ENQ-" + String(100 + count), kind: toDbEnquiryKind(input.kind), name: input.name, phone: input.phone, note: input.note },
+  });
+  return mapEnquiry(row);
 }
 
 export async function listEnquiries() {
-  const db = await load();
-  return [...db.enquiries].reverse();
+  const rows = await prisma.enquiry.findMany({ orderBy: { createdAt: "desc" } });
+  return rows.map(mapEnquiry);
 }
 
 export async function setEnquiryStatus(id: string, status: Enquiry["status"]) {
-  const db = await load();
-  const e = db.enquiries.find((x) => x.id === id);
-  if (!e) return null;
-  e.status = status;
-  await save(db);
-  return e;
+  try {
+    const row = await prisma.enquiry.update({ where: { id }, data: { status } });
+    return mapEnquiry(row);
+  } catch {
+    return null;
+  }
 }
 
 export async function addSubscriber(email: string) {
-  const db = await load();
-  if (!db.subscribers.some((s) => s.email.toLowerCase() === email.toLowerCase())) {
-    db.subscribers.push({ email, createdAt: new Date().toISOString() });
-    await save(db);
-  }
+  await prisma.subscriber.upsert({ where: { email }, create: { email }, update: {} });
   return true;
 }
 
 export async function listSubscribers() {
-  const db = await load();
-  return [...db.subscribers].reverse();
+  const rows = await prisma.subscriber.findMany({ orderBy: { createdAt: "desc" } });
+  return rows.map((r) => ({ email: r.email, createdAt: r.createdAt.toISOString() }));
 }

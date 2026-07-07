@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductCategory {
+  living
+  sleep
+  dine
+  accents
+}
+
+enum ProductStyle {
+  modern
+  classic
+}
+
+enum PaymentMode {
+  full
+  token
+}
+
+enum OrderStatus {
+  reserved
+  in_atelier
+  delivered
+}
+
+enum PartnerTier {
+  trade
+  build
+  circle
+}
+
+enum ReferralStatus {
+  pending
+  confirmed
+  paid
+}
+
+enum EnquiryKind {
+  consultation
+  swatch_kit
+}
+
+enum EnquiryStatus {
+  new
+  contacted
+  closed
+}
+
+model Product {
+  slug       String          @id
+  name       String
+  line       String
+  category   ProductCategory
+  type       String
+  style      ProductStyle
+  silhouette String
+  price      Int
+  dims       String
+  wood       String
+  fabrics    Json
+  leadDays   Int
+  story      String          @db.Text
+  plate      Int
+  signature  Boolean         @default(false)
+  active     Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+
+  @@index([category])
+}
+
+model Order {
+  id          String      @id
+  subtotal    Int
+  paymentMode PaymentMode
+  paidNow     Int
+  balanceDue  Int
+  custName    String
+  custPhone   String
+  custEmail   String
+  custAddress String      @db.Text
+  custPin     String
+  refCode     String?
+  status      OrderStatus @default(reserved)
+  createdAt   DateTime    @default(now())
+  items       OrderItem[]
+
+  @@index([custPhone])
+  @@index([refCode])
+}
+
+model OrderItem {
+  id      Int     @id @default(autoincrement())
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+  slug    String
+  name    String
+  line    String
+  qty     Int
+  price   Int
+  fabric  String?
+}
+
+model Partner {
+  code      String      @id
+  name      String
+  firm      String?
+  tier      PartnerTier
+  rate      Int
+  email     String
+  phone     String
+  clicks    Int         @default(0)
+  createdAt DateTime    @default(now())
+  referrals Referral[]
+}
+
+model Referral {
+  id          Int            @id @default(autoincrement())
+  partner     Partner        @relation(fields: [partnerCode], references: [code], onDelete: Cascade)
+  partnerCode String
+  orderId     String
+  orderValue  Int
+  commission  Int
+  status      ReferralStatus @default(pending)
+  date        DateTime       @default(now())
+
+  @@index([partnerCode])
+}
+
+model Enquiry {
+  id        String        @id
+  kind      EnquiryKind
+  name      String
+  phone     String
+  note      String?       @db.Text
+  status    EnquiryStatus @default(new)
+  createdAt DateTime      @default(now())
+}
+
+model Subscriber {
+  email     String   @id
+  createdAt DateTime @default(now())
+}
