@@ -1,13 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
+import { BRAND, addressLine, whatsappLink } from "@/data/brand";
 
 export default function VisitPage() {
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", about: "" });
+  const [showroom, setShowroom] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/site-images")
+      .then((r) => r.json())
+      .then((d) => setShowroom(d.images?.["visit-showroom"] ?? null))
+      .catch(() => {});
+  }, []);
 
   const book = async () => {
     if (!form.name || !form.phone || busy) return;
@@ -38,24 +47,24 @@ export default function VisitPage() {
       <section className="mx-auto grid max-w-[1500px] gap-14 px-6 py-16 lg:grid-cols-2 lg:px-12">
         <div>
           <Reveal variant="img">
-            <Plate kind="workshop" ratio="4/3" plate={50} label="The showroom, Kirti Nagar" toneIndex={1} />
+            <Plate kind="workshop" ratio="4/3" plate={50} label={`The showroom, ${BRAND.address.city}`} toneIndex={1} src={showroom} alt="Oaklen showroom" />
           </Reveal>
           <Reveal delay={100}>
             <div className="mt-8 grid gap-8 sm:grid-cols-2">
               <div>
                 <p className="label mb-3 text-umber">The showroom</p>
                 <p className="text-sm leading-relaxed">
-                  14/2 Furniture Block, Kirti Nagar<br />New Delhi 110015
+                  {BRAND.address.line1}<br />{BRAND.address.city}, {BRAND.address.state} {BRAND.address.pin}
                 </p>
-                <p className="mt-3 text-sm text-umber">Tue–Sun · 10:30 — 19:30</p>
+                <p className="mt-3 text-sm text-umber">{BRAND.hours}</p>
               </div>
               <div>
                 <p className="label mb-3 text-umber">The concierge</p>
                 <p className="text-sm leading-relaxed">
-                  +91 98765 43210<br />atelier@oaklen.in
+                  {BRAND.phoneDisplay}<br />{BRAND.email}
                 </p>
                 <a
-                  href="https://wa.me/919876543210"
+                  href={whatsappLink("Hello Oaklen — I'd like to visit the showroom.")}
                   target="_blank"
                   rel="noreferrer"
                   className="label mt-3 inline-block text-[10px] text-brass underline underline-offset-4"

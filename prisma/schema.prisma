@@ -70,9 +70,16 @@ model Product {
   plate      Int
   signature  Boolean         @default(false)
   active     Boolean         @default(true)
+  image      String?         @db.LongText
   createdAt  DateTime        @default(now())
 
   @@index([category])
+}
+
+model SiteImage {
+  key       String   @id
+  url       String   @db.LongText
+  updatedAt DateTime @updatedAt
 }
 
 model Order {
@@ -86,13 +93,21 @@ model Order {
   custEmail   String
   custAddress String      @db.Text
   custPin     String
-  refCode     String?
-  status      OrderStatus @default(reserved)
-  createdAt   DateTime    @default(now())
-  items       OrderItem[]
+  refCode       String?
+  status        OrderStatus   @default(reserved)
+  paymentStatus PaymentStatus @default(unpaid)
+  paymentId     String?
+  createdAt     DateTime      @default(now())
+  items         OrderItem[]
 
   @@index([custPhone])
   @@index([refCode])
+}
+
+enum PaymentStatus {
+  unpaid
+  paid
+  refunded
 }
 
 model OrderItem {

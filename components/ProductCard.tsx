@@ -7,7 +7,7 @@ export default function ProductCard({ product, toneIndex = 0 }: { product: Produ
     <Link href={`/product/${product.slug}`} data-cursor="view" className="group block">
       <div className="overflow-hidden">
         <div className="transition-transform duration-[1.2s] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.035]">
-          <Plate kind={product.silhouette} label={product.name} plate={product.plate} toneIndex={toneIndex} />
+          <Plate kind={product.silhouette} label={product.name} plate={product.plate} toneIndex={toneIndex} src={product.image} alt={`${product.name} — ${product.line}`} />
         </div>
       </div>
       <div className="mt-5 flex items-baseline justify-between gap-4">

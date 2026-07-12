@@ -25,6 +25,8 @@ function mapOrder(row: OrderRow): Order {
     balanceDue: row.balanceDue,
     refCode: row.refCode ?? undefined,
     status: fromDbOrderStatus(row.status),
+    paymentStatus: row.paymentStatus as Order["paymentStatus"],
+    paymentId: row.paymentId ?? undefined,
     createdAt: row.createdAt.toISOString(),
     customer: { name: row.custName, phone: row.custPhone, email: row.custEmail, address: row.custAddress, pin: row.custPin },
     items: row.items.map((it) => ({
@@ -54,6 +56,7 @@ function mapProduct(row: Prisma.ProductGetPayload<object>): StoredProduct {
     style: row.style, silhouette: row.silhouette as StoredProduct["silhouette"], price: row.price,
     dims: row.dims, wood: row.wood, fabrics: row.fabrics as string[], leadDays: row.leadDays,
     story: row.story, plate: row.plate, signature: row.signature, active: row.active,
+    image: row.image ?? null,
     createdAt: row.createdAt.toISOString(),
   };
 }
@@ -74,6 +77,27 @@ function randomOrderId() {
 }
 
 export const prismaStore: StoreImpl = {
+  async getSiteImages() {
+    const rows = await prisma.siteImage.findMany();
+    const map: Record<string, string> = {};
+    for (const r of rows) map[r.key] = r.url;
+    return map;
+  },
+
+  async setSiteImage(key, url) {
+    await prisma.siteImage.upsert({ where: { key }, create: { key, url }, update: { url } });
+    return true;
+  },
+
+  async clearSiteImage(key) {
+    try {
+      await prisma.siteImage.delete({ where: { key } });
+    } catch {
+      /* already absent */
+    }
+    return true;
+  },
+
   async listProducts(includeInactive = false) {
     const rows = await prisma.product.findMany({
       where: includeInactive ? undefined : { active: true },
@@ -145,6 +169,8 @@ export const prismaStore: StoreImpl = {
           custAddress: order.customer.address,
           custPin: order.customer.pin,
           refCode,
+          paymentStatus: order.paymentStatus ?? "unpaid",
+          paymentId: order.paymentId,
           items: { create: order.items.map((it) => ({ ...it })) },
         },
         include: { items: true },
@@ -184,6 +210,19 @@ export const prismaStore: StoreImpl = {
   async listOrders() {
     const rows = await prisma.order.findMany({ include: { items: true }, orderBy: { createdAt: "desc" } });
     return rows.map(mapOrder);
+  },
+
+  async setOrderPayment(id, paymentStatus, paymentId) {
+    try {
+      const row = await prisma.order.update({
+        where: { id },
+        data: { paymentStatus, ...(paymentId ? { paymentId } : {}) },
+        include: { items: true },
+      });
+      return mapOrder(row);
+    } catch {
+      return null;
+    }
   },
 
   async setOrderStatus(id, status) {

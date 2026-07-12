@@ -12,12 +12,12 @@ const HOTSPOTS = [
   { slug: "atlas-marble-centre", x: 76, y: 66 },
 ];
 
-export default function ShoppableRoom({ products }: { products: Product[] }) {
+export default function ShoppableRoom({ products, image }: { products: Product[]; image?: string }) {
   const [open, setOpen] = useState<string | null>(null);
 
   return (
     <div className="relative">
-      <Plate kind="room" ratio="16/8" toneIndex={1} plate={21} label="The Ivory Room" />
+      <Plate kind="room" ratio="16/8" toneIndex={1} plate={21} label="The Ivory Room" src={image} alt="Oaklen room" />
       {HOTSPOTS.map((h) => {
         const p = products.find((x) => x.slug === h.slug);
         if (!p) return null;

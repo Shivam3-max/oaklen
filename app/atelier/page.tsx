@@ -1,8 +1,11 @@
 import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
 import Link from "next/link";
+import { getSiteImages } from "@/lib/store";
+import { addressLine } from "@/data/brand";
 
 export const metadata = { title: "The Atelier — Oaklen" };
+export const dynamic = "force-dynamic";
 
 const STEPS = [
   ["01", "Selection", "Every log is graded by hand at the yard. We keep one in five.", "workshop"],
@@ -15,7 +18,8 @@ const STEPS = [
   ["08", "Signature", "Signed and numbered on the underside by the crew that built it.", "portrait"],
 ] as const;
 
-export default function AtelierPage() {
+export default async function AtelierPage() {
+  const img = await getSiteImages();
   return (
     <div className="pt-36">
       <section className="mx-auto max-w-[1500px] px-6 lg:px-12">
@@ -35,7 +39,7 @@ export default function AtelierPage() {
 
       <section className="mx-auto max-w-[1500px] px-6 py-20 lg:px-12">
         <Reveal variant="img">
-          <Plate kind="workshop" ratio="16/7" plate={40} label="The floor at Kirti Nagar, Delhi" toneIndex={3} />
+          <Plate kind="workshop" ratio="16/7" plate={40} label={`The floor at ${addressLine}`} toneIndex={3} src={img["atelier-hero"]} alt="Oaklen workshop" />
         </Reveal>
         <div className="mt-6 grid gap-6 border-b hairline pb-10 text-center sm:grid-cols-4">
           {[["48", "craftspeople"], ["90+", "days of seasoning"], ["8 yr", "structural warranty"], ["1 of 5", "logs make the cut"]].map(([n, d], i) => (
@@ -57,7 +61,7 @@ export default function AtelierPage() {
           {STEPS.map(([n, t, d, kind], i) => (
             <Reveal key={n} delay={(i % 4) * 80}>
               <div>
-                <Plate kind={kind} ratio="4/3" toneIndex={i} bare />
+                <Plate kind={kind} ratio="4/3" toneIndex={i} bare src={img[`atelier-step-${i + 1}`]} alt={t} />
                 <p className="label mt-5 text-brass">{n}</p>
                 <p className="mt-2 font-serif text-2xl">{t}</p>
                 <p className="mt-2 text-sm leading-relaxed text-umber">{d}</p>

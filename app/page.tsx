@@ -6,12 +6,12 @@ import CategoryIndex from "@/components/home/CategoryIndex";
 import SplitWorlds from "@/components/home/SplitWorlds";
 import ShoppableRoom from "@/components/home/ShoppableRoom";
 import { formatINR } from "@/data/products";
-import { listProducts } from "@/lib/store";
+import { listProducts, getSiteImages } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const products = await listProducts();
+  const [products, img] = await Promise.all([listProducts(), getSiteImages()]);
   const signature = products.find((p) => p.slug === "aria-three-seater") ?? products[0];
   const arrivals = products.slice(1, 20).filter((p) => p.slug !== signature.slug).slice(0, 4);
   const journal = [
@@ -26,7 +26,7 @@ export default async function Home() {
       <section className="relative flex min-h-svh flex-col justify-end overflow-hidden px-6 pb-14 pt-36 lg:px-12">
         <div className="pointer-events-none absolute right-0 top-0 hidden h-full w-[44%] lg:block">
           <div style={{ animation: "drift 14s ease-in-out infinite alternate" }} className="h-[106%]">
-            <Plate kind="room" ratio="auto" toneIndex={1} bare className="h-full" />
+            <Plate kind="room" ratio="auto" toneIndex={1} bare className="h-full" src={img["home-hero"]} alt="Oaklen interior" />
           </div>
         </div>
         <div className="relative z-[2] max-w-[1500px]">
@@ -74,7 +74,7 @@ export default async function Home() {
       <section className="border-y hairline bg-bone/50">
         <div className="mx-auto grid max-w-[1500px] gap-12 px-6 py-24 lg:grid-cols-2 lg:items-center lg:px-12 lg:py-32">
           <Reveal variant="img">
-            <Plate kind="sofa" ratio="5/4" toneIndex={2} plate={signature.plate} label={`${signature.name} — Signature`} />
+            <Plate kind="sofa" ratio="5/4" toneIndex={2} plate={signature.plate} label={`${signature.name} — Signature`} src={img["home-signature"] ?? signature.image} alt={signature.name} />
           </Reveal>
           <div className="lg:pl-10">
             <Reveal>
@@ -114,7 +114,7 @@ export default async function Home() {
           </div>
         </Reveal>
         <Reveal delay={120}>
-          <SplitWorlds />
+          <SplitWorlds modernImage={img["home-split-modern"]} classicImage={img["home-split-classic"]} />
         </Reveal>
       </section>
 
@@ -162,7 +162,7 @@ export default async function Home() {
           </div>
         </Reveal>
         <Reveal delay={120}>
-          <ShoppableRoom products={products} />
+          <ShoppableRoom products={products} image={img["home-room"]} />
         </Reveal>
       </section>
 

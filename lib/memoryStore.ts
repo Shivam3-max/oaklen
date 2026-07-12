@@ -13,6 +13,7 @@ interface MemDB {
   products: StoredProduct[];
   enquiries: Enquiry[];
   subscribers: { email: string; createdAt: string }[];
+  siteImages: Record<string, string>;
 }
 
 function seedProducts(): StoredProduct[] {
@@ -25,6 +26,7 @@ function freshDB(): MemDB {
     products: seedProducts(),
     enquiries: [],
     subscribers: [],
+    siteImages: {},
     partners: [
       {
         code: "ARJUN10", name: "Arjun Mehta", firm: "Studio Mehta Architects", tier: "trade", rate: 10,
@@ -65,6 +67,20 @@ function randomOrderId() {
 }
 
 export const memoryStore: StoreImpl = {
+  async getSiteImages() {
+    return { ...db.siteImages };
+  },
+
+  async setSiteImage(key, url) {
+    db.siteImages[key] = url;
+    return true;
+  },
+
+  async clearSiteImage(key) {
+    delete db.siteImages[key];
+    return true;
+  },
+
   async listProducts(includeInactive = false) {
     return includeInactive ? db.products : db.products.filter((p) => p.active);
   },
@@ -99,7 +115,13 @@ export const memoryStore: StoreImpl = {
   async createOrder(order) {
     let id = randomOrderId();
     while (db.orders.some((o) => o.id === id)) id = randomOrderId();
-    const full: Order = { ...order, id, status: "reserved", createdAt: new Date().toISOString() };
+    const full: Order = {
+      ...order,
+      id,
+      status: "reserved",
+      paymentStatus: order.paymentStatus ?? "unpaid",
+      createdAt: new Date().toISOString(),
+    };
     db.orders.push(full);
     if (order.refCode) {
       const partner = db.partners.find((p) => p.code === order.refCode!.toUpperCase());
@@ -127,6 +149,14 @@ export const memoryStore: StoreImpl = {
 
   async listOrders() {
     return [...db.orders].reverse();
+  },
+
+  async setOrderPayment(id, paymentStatus, paymentId) {
+    const order = db.orders.find((o) => o.id === id);
+    if (!order) return null;
+    order.paymentStatus = paymentStatus;
+    if (paymentId) order.paymentId = paymentId;
+    return order;
   },
 
   async setOrderStatus(id, status) {

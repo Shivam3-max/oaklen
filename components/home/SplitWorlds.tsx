@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Plate from "../Plate";
 
-export default function SplitWorlds() {
+export default function SplitWorlds({ modernImage, classicImage }: { modernImage?: string; classicImage?: string }) {
   const [side, setSide] = useState<"modern" | "classic" | null>(null);
 
   const pane = (which: "modern" | "classic") => {
@@ -24,6 +24,8 @@ export default function SplitWorlds() {
           toneIndex={which === "modern" ? 2 : 4}
           bare
           className="h-full min-h-[380px] lg:min-h-[560px]"
+          src={which === "modern" ? modernImage : classicImage}
+          alt={which === "modern" ? "Modern furniture" : "Classic furniture"}
         />
         <div className="absolute inset-0 z-[2] flex flex-col items-start justify-end p-8 lg:p-14">
           <p className="label mb-3 text-brass">{which === "modern" ? "The quiet line" : "The long memory"}</p>

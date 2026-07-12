@@ -19,6 +19,8 @@ export interface Order {
   customer: { name: string; phone: string; email: string; address: string; pin: string };
   refCode?: string;
   status: "reserved" | "in-atelier" | "delivered";
+  paymentStatus: "unpaid" | "paid" | "refunded";
+  paymentId?: string;
   createdAt: string;
 }
 
@@ -63,17 +65,23 @@ export interface Subscriber {
   createdAt: string;
 }
 
+export type SiteImageMap = Record<string, string>;
+
 export interface StoreImpl {
+  getSiteImages(): Promise<SiteImageMap>;
+  setSiteImage(key: string, url: string): Promise<boolean>;
+  clearSiteImage(key: string): Promise<boolean>;
   listProducts(includeInactive?: boolean): Promise<StoredProduct[]>;
   getStoredProduct(slug: string): Promise<StoredProduct | null>;
   createProduct(input: Omit<Product, "slug" | "plate">): Promise<StoredProduct>;
   updateProduct(slug: string, patch: Partial<Omit<StoredProduct, "slug" | "createdAt">>): Promise<StoredProduct | null>;
   deleteProduct(slug: string): Promise<boolean>;
-  createOrder(order: Omit<Order, "id" | "createdAt" | "status">): Promise<Order>;
+  createOrder(order: Omit<Order, "id" | "createdAt" | "status" | "paymentStatus" | "paymentId"> & { paymentStatus?: Order["paymentStatus"]; paymentId?: string }): Promise<Order>;
   getOrder(id: string): Promise<Order | null>;
   ordersByPhone(phone: string): Promise<Order[]>;
   listOrders(): Promise<Order[]>;
   setOrderStatus(id: string, status: Order["status"]): Promise<Order | null>;
+  setOrderPayment(id: string, paymentStatus: Order["paymentStatus"], paymentId?: string): Promise<Order | null>;
   listPartners(): Promise<Partner[]>;
   getPartner(code: string): Promise<Partner | null>;
   trackClick(code: string): Promise<boolean>;

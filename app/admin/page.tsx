@@ -7,8 +7,9 @@ import OrdersTab from "./tabs/OrdersTab";
 import ProductsTab from "./tabs/ProductsTab";
 import PartnersTab from "./tabs/PartnersTab";
 import InboxTab from "./tabs/InboxTab";
+import MediaTab from "./tabs/MediaTab";
 
-const TABS = ["overview", "orders", "products", "partners", "inbox"] as const;
+const TABS = ["overview", "orders", "products", "media", "partners", "inbox"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -110,6 +111,7 @@ export default function AdminPage() {
       {tab === "overview" && <OverviewTab data={data} />}
       {tab === "orders" && <OrdersTab data={data} act={act} />}
       {tab === "products" && <ProductsTab data={data} act={act} />}
+      {tab === "media" && <MediaTab data={data} act={act} />}
       {tab === "partners" && <PartnersTab data={data} act={act} />}
       {tab === "inbox" && <InboxTab data={data} act={act} />}
     </div>

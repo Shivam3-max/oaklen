@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Plate from "@/components/Plate";
+import ImageUploader from "@/components/ImageUploader";
 import { FABRICS, formatINR, Silhouette, Category, Style } from "@/data/products";
+import { PRODUCT_IMAGE_SIZE } from "@/data/siteImages";
 import type { AdminData, Act, StoredProduct } from "../types";
 
 const SILHOUETTES: { id: Silhouette; label: string }[] = [
@@ -34,12 +36,12 @@ const CATEGORIES: { id: Category; label: string }[] = [
 interface FormState {
   name: string; line: string; category: Category; type: string; style: Style;
   silhouette: Silhouette; price: string; dims: string; wood: string;
-  leadDays: string; story: string; fabrics: string[];
+  leadDays: string; story: string; fabrics: string[]; image: string | null;
 }
 
 const EMPTY: FormState = {
   name: "", line: "", category: "living", type: "", style: "modern",
-  silhouette: "sofa", price: "", dims: "", wood: "", leadDays: "21", story: "", fabrics: [],
+  silhouette: "sofa", price: "", dims: "", wood: "", leadDays: "21", story: "", fabrics: [], image: null,
 };
 
 function ProductForm({
@@ -52,10 +54,20 @@ function ProductForm({
   busy: boolean;
 }) {
   const [f, setF] = useState<FormState>(initial);
-  const set = (k: keyof FormState, v: string | string[]) => setF({ ...f, [k]: v });
+  const set = (k: keyof FormState, v: string | string[] | null) => setF({ ...f, [k]: v });
 
   return (
     <div className="grid gap-6 sm:grid-cols-2">
+      <div className="sm:col-span-2">
+        <p className="label mb-3 text-[9px] text-umber">Product photo — {PRODUCT_IMAGE_SIZE.label} · shown on the shop grid and product page, replaces the placeholder</p>
+        <ImageUploader
+          value={f.image}
+          width={PRODUCT_IMAGE_SIZE.w}
+          height={PRODUCT_IMAGE_SIZE.h}
+          ratio="5/4"
+          onChange={(url) => set("image", url)}
+        />
+      </div>
       <input placeholder="Name — e.g. Aria" value={f.name} onChange={(e) => set("name", e.target.value)} />
       <input placeholder="Line — e.g. Three-Seater Sofa" value={f.line} onChange={(e) => set("line", e.target.value)} />
       <div>
@@ -119,7 +131,7 @@ function toForm(p: StoredProduct): FormState {
   return {
     name: p.name, line: p.line, category: p.category, type: p.type, style: p.style,
     silhouette: p.silhouette, price: String(p.price), dims: p.dims, wood: p.wood,
-    leadDays: String(p.leadDays), story: p.story, fabrics: p.fabrics,
+    leadDays: String(p.leadDays), story: p.story, fabrics: p.fabrics, image: p.image ?? null,
   };
 }
 
@@ -127,7 +139,7 @@ function fromForm(f: FormState) {
   return {
     name: f.name, line: f.line, category: f.category, type: f.type || f.line, style: f.style,
     silhouette: f.silhouette, price: Number(f.price), dims: f.dims, wood: f.wood,
-    leadDays: Number(f.leadDays), story: f.story, fabrics: f.fabrics,
+    leadDays: Number(f.leadDays), story: f.story, fabrics: f.fabrics, image: f.image,
   };
 }
 
@@ -178,7 +190,7 @@ export default function ProductsTab({ data, act }: { data: AdminData; act: Act }
           <div key={p.slug} className={`border hairline ${p.active ? "" : "opacity-55"}`}>
             <div className="flex flex-wrap items-center gap-6 p-5">
               <div className="w-20 shrink-0">
-                <Plate kind={p.silhouette} ratio="1/1" toneIndex={p.plate} bare />
+                <Plate kind={p.silhouette} ratio="1/1" toneIndex={p.plate} bare src={p.image} />
               </div>
               <div className="min-w-44 flex-1">
                 <p className="font-serif text-xl">

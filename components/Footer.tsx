@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NewsletterForm from "./NewsletterForm";
+import { BRAND } from "@/data/brand";
 
 export default function Footer() {
   return (
@@ -42,8 +43,17 @@ export default function Footer() {
               <li><Link href="/trade/dashboard" className="hover:text-brass">Partner Dashboard</Link></li>
             </ul>
             <p className="label mt-8 text-umber">Concierge</p>
-            <p className="mt-3 text-sm">+91 98765 43210<br />atelier@oaklen.in</p>
+            <p className="mt-3 text-sm">{BRAND.phoneDisplay}<br />{BRAND.email}</p>
+            <p className="mt-3 text-sm leading-relaxed text-umber">
+              {BRAND.address.line1}<br />{BRAND.address.city}, {BRAND.address.state} {BRAND.address.pin}
+            </p>
           </div>
+        </div>
+        <div className="flex flex-wrap gap-x-6 gap-y-2 border-t hairline py-6">
+          <Link href="/policies/privacy" className="label text-[10px] text-umber hover:text-brass">Privacy</Link>
+          <Link href="/policies/terms" className="label text-[10px] text-umber hover:text-brass">Terms</Link>
+          <Link href="/policies/shipping" className="label text-[10px] text-umber hover:text-brass">Shipping</Link>
+          <Link href="/policies/refunds" className="label text-[10px] text-umber hover:text-brass">Returns &amp; refunds</Link>
         </div>
       </div>
       <div className="overflow-hidden px-2">

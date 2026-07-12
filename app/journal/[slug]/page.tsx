@@ -3,16 +3,16 @@ import { notFound } from "next/navigation";
 import Plate from "@/components/Plate";
 import Reveal from "@/components/Reveal";
 import { ARTICLES } from "@/data/journal";
+import { getSiteImages } from "@/lib/store";
 
-export function generateStaticParams() {
-  return ARTICLES.map((a) => ({ slug: a.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const article = ARTICLES.find((a) => a.slug === slug);
   if (!article) notFound();
   const others = ARTICLES.filter((a) => a.slug !== slug);
+  const img = await getSiteImages();
 
   return (
     <div className="mx-auto max-w-3xl px-6 pb-28 pt-36 lg:px-0">
@@ -23,7 +23,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       </Reveal>
       <Reveal delay={120}>
         <div className="my-12">
-          <Plate kind="detail" ratio="16/8" toneIndex={2} bare />
+          <Plate kind="detail" ratio="16/8" toneIndex={2} bare src={img[`journal-${article.slug}`]} alt={article.title} />
         </div>
       </Reveal>
       <div className="space-y-7 leading-[1.85] text-espresso/85">

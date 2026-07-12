@@ -5,6 +5,24 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
 import { fabricById, formatINR, tokenAmount } from "@/data/products";
+import { BRAND } from "@/data/brand";
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => { open: () => void };
+  }
+}
+
+function loadRazorpay(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (window.Razorpay) return resolve(true);
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
 
 export default function CheckoutPage() {
   const { lines, subtotal, clear, product } = useCart();
@@ -28,6 +46,23 @@ export default function CheckoutPage() {
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
+  const cartItems = () =>
+    lines.map((l) => ({ slug: l.slug, qty: l.qty, fabric: l.fabric ? fabricById(l.fabric)?.name : undefined }));
+
+  // Places the order on the server (optionally with a verified Razorpay result),
+  // then goes to the success page.
+  const submitOrder = async (payment?: { razorpayOrderId: string; razorpayPaymentId: string; razorpaySignature: string }) => {
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: cartItems(), paymentMode: mode, customer: form, refCode: refCode.trim() || undefined, ...payment }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error ?? "Something went wrong");
+    clear();
+    router.push(`/checkout/success?order=${data.id}`);
+  };
+
   const placeOrder = async () => {
     setError(null);
     if (!form.name || !/^\d{10}$/.test(form.phone.replace(/\D/g, "").slice(-10)) || !form.address || !/^\d{6}$/.test(form.pin)) {
@@ -36,24 +71,53 @@ export default function CheckoutPage() {
     }
     setBusy(true);
     try {
-      const res = await fetch("/api/orders", {
+      // ask the server what the payable amount is and whether payments are live
+      const initRes = await fetch("/api/payments/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: lines.map((l) => ({
-            slug: l.slug,
-            qty: l.qty,
-            fabric: l.fabric ? fabricById(l.fabric)?.name : undefined,
-          })),
-          paymentMode: mode,
-          customer: form,
-          refCode: refCode.trim() || undefined,
-        }),
+        body: JSON.stringify({ items: cartItems(), paymentMode: mode }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Something went wrong");
-      clear();
-      router.push(`/checkout/success?order=${data.id}`);
+      const init = await initRes.json();
+      if (!initRes.ok) throw new Error(init.error ?? "Could not start payment");
+
+      if (!init.configured) {
+        // demo mode — no gateway, record the order directly
+        await submitOrder();
+        return;
+      }
+
+      const ok = await loadRazorpay();
+      if (!ok || !window.Razorpay) throw new Error("Couldn’t load the payment window. Check your connection.");
+
+      const rzp = new window.Razorpay({
+        key: init.keyId,
+        order_id: init.rzpOrderId,
+        amount: init.amount,
+        currency: "INR",
+        name: BRAND.name,
+        description: mode === "full" ? "Full payment" : "Reservation token",
+        prefill: { name: form.name, email: form.email, contact: form.phone },
+        theme: { color: "#2B2117" },
+        handler: async (r: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+          try {
+            await submitOrder({
+              razorpayOrderId: r.razorpay_order_id,
+              razorpayPaymentId: r.razorpay_payment_id,
+              razorpaySignature: r.razorpay_signature,
+            });
+          } catch (e) {
+            setError((e as Error).message);
+            setBusy(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setError("Payment was cancelled. Your card was not charged — try again when ready.");
+            setBusy(false);
+          },
+        },
+      } as Record<string, unknown>);
+      rzp.open();
     } catch (e) {
       setError((e as Error).message);
       setBusy(false);
@@ -152,7 +216,7 @@ export default function CheckoutPage() {
             {busy ? "Placing…" : mode === "token" ? "Pay token & reserve" : "Pay & reserve"}
           </button>
           <p className="mt-4 text-center text-[10px] leading-relaxed text-umber">
-            Payments run through Razorpay in test mode until keys go live. No card is charged today.
+            Secure payment by Razorpay. Prices are inclusive of GST. You&apos;ll receive a confirmation by email.
           </p>
         </aside>
       </div>

@@ -43,6 +43,7 @@ export interface Product {
   story: string;
   plate: number;
   signature?: boolean;
+  image?: string | null;
 }
 
 export const PRODUCTS: Product[] = [

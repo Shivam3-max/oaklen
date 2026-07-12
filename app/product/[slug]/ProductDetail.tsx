@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Plate from "@/components/Plate";
 import { useCart } from "@/components/CartContext";
 import { Product, fabricById, formatINR, tokenAmount } from "@/data/products";
+import { whatsappLink } from "@/data/brand";
 
 const SERVICEABLE_PREFIX = ["11", "12", "20", "40", "41", "56", "60", "70", "30", "50", "38", "39", "18", "26"];
 
@@ -48,7 +49,7 @@ export default function ProductDetail({ product }: { product: Product }) {
     <section className="mx-auto grid max-w-[1500px] gap-12 px-6 py-12 lg:grid-cols-[1.15fr_1fr] lg:px-12">
       {/* gallery */}
       <div className="space-y-4 lg:sticky lg:top-28 lg:self-start">
-        <Plate kind={product.silhouette} ratio="5/4" plate={product.plate} label={product.name} toneIndex={product.plate} />
+        <Plate kind={product.silhouette} ratio="5/4" plate={product.plate} label={product.name} toneIndex={product.plate} src={product.image} alt={`${product.name} — ${product.line}`} />
         <div className="grid grid-cols-2 gap-4">
           <Plate kind="detail" ratio="4/3" plate={`${product.plate}a`} label="Grain study" toneIndex={product.plate + 1} />
           <Plate kind="craft" ratio="4/3" plate={`${product.plate}b`} label="Maker's hand" toneIndex={product.plate + 2} />
@@ -128,7 +129,7 @@ export default function ProductDetail({ product }: { product: Product }) {
             </button>
           </div>
           <a
-            href={`https://wa.me/919876543210?text=${encodeURIComponent(`I'd like to talk about the ${product.name} ${product.line}.`)}`}
+            href={whatsappLink(`I'd like to talk about the ${product.name} ${product.line}.`)}
             target="_blank"
             rel="noreferrer"
             className="label mt-4 inline-block text-[10px] text-umber underline-offset-4 hover:text-brass hover:underline"

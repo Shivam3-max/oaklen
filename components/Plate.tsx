@@ -226,6 +226,8 @@ export default function Plate({
   toneIndex = 0,
   className = "",
   bare = false,
+  src,
+  alt,
 }: {
   kind: PlateKind;
   label?: string;
@@ -234,8 +236,24 @@ export default function Plate({
   toneIndex?: number;
   className?: string;
   bare?: boolean;
+  src?: string | null;
+  alt?: string;
 }) {
   const tone = TONES[toneIndex % TONES.length];
+
+  // A real photograph has been uploaded for this slot — show it, drop the plate.
+  if (src) {
+    return (
+      <div
+        className={`relative overflow-hidden ${className}`}
+        style={{ aspectRatio: ratio, background: tone }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={alt ?? label ?? ""} className="h-full w-full object-cover" />
+      </div>
+    );
+  }
+
   return (
     <div
       className={`grain relative overflow-hidden ${className}`}

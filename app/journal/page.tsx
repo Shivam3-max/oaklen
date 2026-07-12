@@ -2,10 +2,13 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
 import { ARTICLES } from "@/data/journal";
+import { getSiteImages } from "@/lib/store";
 
 export const metadata = { title: "The Journal — Oaklen" };
+export const dynamic = "force-dynamic";
 
-export default function JournalPage() {
+export default async function JournalPage() {
+  const img = await getSiteImages();
   return (
     <div className="mx-auto max-w-[1500px] px-6 pb-28 pt-36 lg:px-12">
       <Reveal>
@@ -23,7 +26,7 @@ export default function JournalPage() {
               className="group grid gap-8 border-t hairline py-12 last:border-b md:grid-cols-[220px_1fr_auto] md:items-center"
             >
               <div className="w-full max-w-[220px]">
-                <Plate kind={i === 0 ? "detail" : i === 1 ? "sofa" : "throw"} ratio="4/3" toneIndex={i + 1} bare />
+                <Plate kind={i === 0 ? "detail" : i === 1 ? "sofa" : "throw"} ratio="4/3" toneIndex={i + 1} bare src={img[`journal-${a.slug}`]} alt={a.title} />
               </div>
               <div>
                 <p className="label mb-3 text-brass">{a.tag} · {a.date}</p>

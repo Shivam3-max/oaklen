@@ -9,6 +9,9 @@ export type { Order, OrderItem, Partner, Referral, StoredProduct, Enquiry, Subsc
 // and writes through the real MySQL database instead, with no code changes.
 const impl: StoreImpl = process.env.DATABASE_URL ? prismaStore : memoryStore;
 
+export const getSiteImages = impl.getSiteImages;
+export const setSiteImage = impl.setSiteImage;
+export const clearSiteImage = impl.clearSiteImage;
 export const listProducts = impl.listProducts;
 export const getStoredProduct = impl.getStoredProduct;
 export const createProduct = impl.createProduct;
@@ -19,6 +22,7 @@ export const getOrder = impl.getOrder;
 export const ordersByPhone = impl.ordersByPhone;
 export const listOrders = impl.listOrders;
 export const setOrderStatus = impl.setOrderStatus;
+export const setOrderPayment = impl.setOrderPayment;
 export const listPartners = impl.listPartners;
 export const getPartner = impl.getPartner;
 export const trackClick = impl.trackClick;

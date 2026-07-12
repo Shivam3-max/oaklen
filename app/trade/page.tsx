@@ -2,8 +2,10 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
 import ApplyForm from "./ApplyForm";
+import { getSiteImages } from "@/lib/store";
 
 export const metadata = { title: "Partners — Oaklen Trade, Build & Circle" };
+export const dynamic = "force-dynamic";
 
 const TIERS = [
   {
@@ -20,7 +22,8 @@ const TIERS = [
   },
 ];
 
-export default function TradePage() {
+export default async function TradePage() {
+  const img = await getSiteImages();
   return (
     <div className="pt-36">
       <section className="mx-auto max-w-[1500px] px-6 lg:px-12">
@@ -98,7 +101,7 @@ export default function TradePage() {
           </div>
           <div>
             <Reveal variant="img">
-              <Plate kind="workshop" ratio="4/5" plate={30} label="Partners' preview, the atelier" toneIndex={3} />
+              <Plate kind="workshop" ratio="4/5" plate={30} label="Partners' preview, the atelier" toneIndex={3} src={img["trade-preview"]} alt="Oaklen atelier" />
             </Reveal>
           </div>
         </div>

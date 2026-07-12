@@ -56,6 +56,9 @@ export default function OrdersTab({ data, act }: { data: AdminData; act: Act }) 
                   {STATUS_LABEL[o.status]}
                 </span>
                 {o.refCode && <span className="label text-[9px] text-brass">via {o.refCode}</span>}
+                <span className={`label text-[9px] ${o.paymentStatus === "paid" ? "text-walnut" : o.paymentStatus === "refunded" ? "text-[#8a3a2a]" : "text-umber"}`}>
+                  {o.paymentStatus}
+                </span>
               </div>
               <p className="label text-[10px] text-umber">
                 {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
@@ -78,19 +81,29 @@ export default function OrdersTab({ data, act }: { data: AdminData; act: Act }) 
                 <p>Paid {formatINR(o.paidNow)} ({o.paymentMode})</p>
                 {o.balanceDue > 0 && <p className="text-walnut">Due {formatINR(o.balanceDue)}</p>}
               </div>
-              <div className="flex items-start gap-2">
-                {ORDER_FLOW.map((s) => (
+              <div className="flex flex-col items-start gap-2">
+                <div className="flex gap-2">
+                  {ORDER_FLOW.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => act({ action: "order-status", id: o.id, status: s })}
+                      disabled={o.status === s}
+                      className={`border px-3 py-2 text-[10px] tracking-wide transition-all ${
+                        o.status === s ? "border-brass bg-bone text-espresso" : "hairline text-umber hover:border-espresso/40"
+                      }`}
+                    >
+                      {STATUS_LABEL[s]}
+                    </button>
+                  ))}
+                </div>
+                {o.paymentStatus !== "refunded" && (
                   <button
-                    key={s}
-                    onClick={() => act({ action: "order-status", id: o.id, status: s })}
-                    disabled={o.status === s}
-                    className={`border px-3 py-2 text-[10px] tracking-wide transition-all ${
-                      o.status === s ? "border-brass bg-bone text-espresso" : "hairline text-umber hover:border-espresso/40"
-                    }`}
+                    onClick={() => { if (confirm(`Refund ${o.id}? This reverses the payment.`)) act({ action: "order-refund", id: o.id }); }}
+                    className="label text-[10px] text-umber hover:text-[#8a3a2a]"
                   >
-                    {STATUS_LABEL[s]}
+                    Issue refund
                   </button>
-                ))}
+                )}
               </div>
             </div>
           </div>

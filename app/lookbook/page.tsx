@@ -2,20 +2,20 @@ import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
 import ShoppableRoom from "@/components/home/ShoppableRoom";
 import Link from "next/link";
-import { listProducts } from "@/lib/store";
+import { listProducts, getSiteImages } from "@/lib/store";
 
 export const metadata = { title: "Rooms — the Oaklen Lookbook" };
 export const dynamic = "force-dynamic";
 
 const ROOMS = [
-  { plate: 21, title: "The Ivory Room", note: "Aria, Pebble, Meadow — the quiet default." },
-  { plate: 22, title: "A Study in Walnut", note: "Bramble and Atlas, for rooms with books." },
-  { plate: 23, title: "The Long Table", note: "Longford set for eight, morning light." },
-  { plate: 24, title: "Sleep, North-Facing", note: "Nocturne in Oat Linen, nothing else." },
+  { plate: 21, key: "lookbook-hero", title: "The Ivory Room", note: "Aria, Pebble, Meadow — the quiet default." },
+  { plate: 22, key: "lookbook-2", title: "A Study in Walnut", note: "Bramble and Atlas, for rooms with books." },
+  { plate: 23, key: "lookbook-3", title: "The Long Table", note: "Longford set for eight, morning light." },
+  { plate: 24, key: "lookbook-4", title: "Sleep, North-Facing", note: "Nocturne in Oat Linen, nothing else." },
 ];
 
 export default async function Lookbook() {
-  const products = await listProducts();
+  const [products, img] = await Promise.all([listProducts(), getSiteImages()]);
   return (
     <div className="pt-36">
       <section className="mx-auto max-w-[1500px] px-6 lg:px-12">
@@ -32,13 +32,13 @@ export default async function Lookbook() {
 
       <section className="mx-auto max-w-[1500px] px-6 py-16 lg:px-12">
         <Reveal delay={100}>
-          <ShoppableRoom products={products} />
+          <ShoppableRoom products={products} image={img["lookbook-hero"]} />
         </Reveal>
         <div className="mt-16 grid gap-x-8 gap-y-14 md:grid-cols-2">
           {ROOMS.slice(1).map((r, i) => (
             <Reveal key={r.plate} delay={i * 90}>
               <div>
-                <Plate kind="room" ratio="4/3" plate={r.plate} label={r.title} toneIndex={i + 1} />
+                <Plate kind="room" ratio="4/3" plate={r.plate} label={r.title} toneIndex={i + 1} src={img[r.key]} alt={r.title} />
                 <div className="mt-5 flex items-baseline justify-between gap-4">
                   <p className="font-serif text-2xl">{r.title}</p>
                   <p className="label text-[9px] text-umber">Shoppable soon</p>

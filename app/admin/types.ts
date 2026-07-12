@@ -8,6 +8,7 @@ export interface AdminData {
   products: StoredProduct[];
   enquiries: Enquiry[];
   subscribers: Subscriber[];
+  siteImages?: Record<string, string>;
   demoMode?: boolean;
 }
 
