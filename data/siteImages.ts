@@ -42,9 +42,9 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: "journal-the-case-for-slow-furniture", label: "Journal — Slow furniture", section: "Journal", w: 1200, h: 760 },
   { key: "journal-caring-for-boucle", label: "Journal — Caring for bouclé", section: "Journal", w: 1200, h: 760 },
 
-  // Visit / Trade
+  // Visit / Rewards
   { key: "visit-showroom", label: "Visit — showroom", section: "Visit", w: 1200, h: 900 },
-  { key: "trade-preview", label: "Trade — partners’ preview", section: "Trade", w: 1000, h: 1250 },
+  { key: "trade-preview", label: "Rewards — atelier preview", section: "Rewards", w: 1000, h: 1250 },
 ];
 
 export const PRODUCT_IMAGE_SIZE = { w: 1400, h: 1120, label: "1400 × 1120 px (5:4), JPG or PNG" };

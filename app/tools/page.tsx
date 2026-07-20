@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
-import EmiCalculator from "./widgets/EmiCalculator";
 import DeliveryEstimator from "./widgets/DeliveryEstimator";
 import FabricExplorer from "./widgets/FabricExplorer";
 
@@ -17,7 +16,7 @@ export default async function ToolsPage() {
         <Reveal>
           <p className="label mb-4 text-brass">The Toolbench</p>
           <h1 className="serif-display max-w-4xl text-6xl lg:text-8xl">
-            Measure twice, <span className="italic text-walnut">reserve once.</span>
+            Measure twice, <span className="italic text-walnut">book once.</span>
           </h1>
         </Reveal>
       </section>
@@ -47,24 +46,17 @@ export default async function ToolsPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1500px] gap-20 px-6 pb-28 lg:grid-cols-3 lg:px-12">
+      <section className="mx-auto grid max-w-[1500px] gap-20 px-6 pb-28 lg:grid-cols-2 lg:px-12">
         <Reveal>
           <div>
             <p className="label mb-2 text-brass">Tool 03</p>
-            <h2 className="serif-display mb-8 text-3xl">EMI, honestly</h2>
-            <EmiCalculator />
+            <h2 className="serif-display mb-8 text-3xl">When will it arrive?</h2>
+            <DeliveryEstimator products={products} />
           </div>
         </Reveal>
         <Reveal delay={80}>
           <div>
             <p className="label mb-2 text-brass">Tool 04</p>
-            <h2 className="serif-display mb-8 text-3xl">When will it arrive?</h2>
-            <DeliveryEstimator products={products} />
-          </div>
-        </Reveal>
-        <Reveal delay={160}>
-          <div>
-            <p className="label mb-2 text-brass">Tool 05</p>
             <h2 className="serif-display mb-8 text-3xl">The fabric wall</h2>
             <FabricExplorer />
           </div>

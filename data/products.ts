@@ -43,8 +43,10 @@ export interface Product {
   story: string;
   plate: number;
   signature?: boolean;
-  image?: string | null;
+  images?: string[];
 }
+
+export const MAX_PRODUCT_IMAGES = 6;
 
 export const PRODUCTS: Product[] = [
   { slug: "aria-three-seater", name: "Aria", line: "Three-Seater Sofa", category: "living", type: "Sofa", style: "modern", silhouette: "sofa", price: 168000, dims: "220 × 95 × 78 cm", wood: "Kiln-dried teak frame", fabrics: ["ecru-boucle", "oat-linen", "moss-velvet", "ink-velvet"], leadDays: 21, story: "Low, long and quiet. The Aria carries its weight on a shadow-gap plinth so the whole piece appears to hover an inch above the floor.", plate: 1, signature: true },
@@ -84,8 +86,4 @@ export function fabricById(id: string) {
 
 export function formatINR(n: number) {
   return "₹" + n.toLocaleString("en-IN");
-}
-
-export function tokenAmount(total: number) {
-  return Math.round((total * 0.15) / 100) * 100;
 }

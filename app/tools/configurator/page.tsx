@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Plate from "@/components/Plate";
 import { useCart } from "@/components/CartContext";
-import { FABRICS, formatINR, tokenAmount } from "@/data/products";
+import { FABRICS, formatINR } from "@/data/products";
 
 const SILHOUETTES = [
   { id: "sofa", label: "Aria — straight", base: 168000, slug: "aria-three-seater" },
@@ -130,7 +130,7 @@ export default function Configurator() {
               <p className="label text-umber">Your build</p>
               <p className="serif-display text-4xl">{formatINR(price)}</p>
             </div>
-            <p className="mt-2 text-xs text-umber">Reserve today with {formatINR(tokenAmount(price))} · balance on delivery</p>
+            <p className="mt-2 text-xs text-umber">No payment online — book with your contact details.</p>
             <button
               className="btn-solid mt-6 w-full justify-center"
               onClick={() => {
@@ -138,10 +138,10 @@ export default function Configurator() {
                 router.push("/checkout");
               }}
             >
-              Send to the bench
+              Book this build
             </button>
             <p className="mt-3 text-center text-[10px] text-umber">
-              Adds the base piece to your reservation — the concierge confirms size & legs before build.
+              Adds the base piece to your booking — our team confirms size &amp; legs before build.
             </p>
           </div>
         </div>

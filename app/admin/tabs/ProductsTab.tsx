@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Plate from "@/components/Plate";
-import ImageUploader from "@/components/ImageUploader";
-import { FABRICS, formatINR, Silhouette, Category, Style } from "@/data/products";
+import MultiImageUploader from "@/components/MultiImageUploader";
+import { FABRICS, formatINR, Silhouette, Category, Style, MAX_PRODUCT_IMAGES } from "@/data/products";
 import { PRODUCT_IMAGE_SIZE } from "@/data/siteImages";
 import type { AdminData, Act, StoredProduct } from "../types";
 
@@ -36,12 +36,12 @@ const CATEGORIES: { id: Category; label: string }[] = [
 interface FormState {
   name: string; line: string; category: Category; type: string; style: Style;
   silhouette: Silhouette; price: string; dims: string; wood: string;
-  leadDays: string; story: string; fabrics: string[]; image: string | null;
+  leadDays: string; story: string; fabrics: string[]; images: string[];
 }
 
 const EMPTY: FormState = {
   name: "", line: "", category: "living", type: "", style: "modern",
-  silhouette: "sofa", price: "", dims: "", wood: "", leadDays: "21", story: "", fabrics: [], image: null,
+  silhouette: "sofa", price: "", dims: "", wood: "", leadDays: "21", story: "", fabrics: [], images: [],
 };
 
 function ProductForm({
@@ -59,13 +59,13 @@ function ProductForm({
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       <div className="sm:col-span-2">
-        <p className="label mb-3 text-[9px] text-umber">Product photo — {PRODUCT_IMAGE_SIZE.label} · shown on the shop grid and product page, replaces the placeholder</p>
-        <ImageUploader
-          value={f.image}
+        <p className="label mb-3 text-[9px] text-umber">Product photos — {PRODUCT_IMAGE_SIZE.label} · shown on the shop grid and product page, replaces the placeholder</p>
+        <MultiImageUploader
+          images={f.images}
           width={PRODUCT_IMAGE_SIZE.w}
           height={PRODUCT_IMAGE_SIZE.h}
-          ratio="5/4"
-          onChange={(url) => set("image", url)}
+          max={MAX_PRODUCT_IMAGES}
+          onChange={(imgs) => setF({ ...f, images: imgs })}
         />
       </div>
       <input placeholder="Name — e.g. Aria" value={f.name} onChange={(e) => set("name", e.target.value)} />
@@ -131,7 +131,7 @@ function toForm(p: StoredProduct): FormState {
   return {
     name: p.name, line: p.line, category: p.category, type: p.type, style: p.style,
     silhouette: p.silhouette, price: String(p.price), dims: p.dims, wood: p.wood,
-    leadDays: String(p.leadDays), story: p.story, fabrics: p.fabrics, image: p.image ?? null,
+    leadDays: String(p.leadDays), story: p.story, fabrics: p.fabrics, images: p.images ?? [],
   };
 }
 
@@ -139,7 +139,7 @@ function fromForm(f: FormState) {
   return {
     name: f.name, line: f.line, category: f.category, type: f.type || f.line, style: f.style,
     silhouette: f.silhouette, price: Number(f.price), dims: f.dims, wood: f.wood,
-    leadDays: Number(f.leadDays), story: f.story, fabrics: f.fabrics, image: f.image,
+    leadDays: Number(f.leadDays), story: f.story, fabrics: f.fabrics, images: f.images,
   };
 }
 
@@ -190,7 +190,7 @@ export default function ProductsTab({ data, act }: { data: AdminData; act: Act }
           <div key={p.slug} className={`border hairline ${p.active ? "" : "opacity-55"}`}>
             <div className="flex flex-wrap items-center gap-6 p-5">
               <div className="w-20 shrink-0">
-                <Plate kind={p.silhouette} ratio="1/1" toneIndex={p.plate} bare src={p.image} />
+                <Plate kind={p.silhouette} ratio="1/1" toneIndex={p.plate} bare src={p.images?.[0]} />
               </div>
               <div className="min-w-44 flex-1">
                 <p className="font-serif text-xl">

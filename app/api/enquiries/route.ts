@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   if (!body.name || !body.phone) {
     return NextResponse.json({ error: "Name and phone required" }, { status: 400 });
   }
-  const kind = body.kind === "swatch-kit" ? "swatch-kit" : "consultation";
+  const kind = body.kind === "swatch-kit" ? "swatch-kit" : body.kind === "reward" ? "reward" : "consultation";
   const enquiry = await createEnquiry({ kind, name: body.name, phone: body.phone, note: body.note });
   void sendEnquiryAlert(kind, body.name, body.phone, body.note);
   return NextResponse.json({ id: enquiry.id });

@@ -5,7 +5,7 @@ import { formatINR } from "@/data/products";
 import type { AdminData, Act, Order } from "../types";
 import { STATUS_LABEL } from "../types";
 
-const ORDER_FLOW: Order["status"][] = ["reserved", "in-atelier", "delivered"];
+const ORDER_FLOW: Order["status"][] = ["new", "in-atelier", "delivered"];
 
 export default function OrdersTab({ data, act }: { data: AdminData; act: Act }) {
   const [filter, setFilter] = useState<"all" | Order["status"]>("all");
@@ -15,11 +15,7 @@ export default function OrdersTab({ data, act }: { data: AdminData; act: Act }) 
   const orders = data.orders.filter(
     (o) =>
       (filter === "all" || o.status === filter) &&
-      (!q ||
-        o.id.toLowerCase().includes(q) ||
-        o.customer.name.toLowerCase().includes(q) ||
-        o.customer.phone.includes(q) ||
-        (o.refCode ?? "").toLowerCase().includes(q))
+      (!q || o.id.toLowerCase().includes(q) || o.customer.name.toLowerCase().includes(q) || o.customer.phone.includes(q))
   );
 
   return (
@@ -37,7 +33,7 @@ export default function OrdersTab({ data, act }: { data: AdminData; act: Act }) 
           ))}
         </div>
         <input
-          placeholder="Search id, name, phone, code…"
+          placeholder="Search id, name, phone…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="max-w-60 !py-1.5 text-sm"
@@ -55,10 +51,6 @@ export default function OrdersTab({ data, act }: { data: AdminData; act: Act }) 
                 <span className={`label text-[9px] ${o.status === "delivered" ? "text-walnut" : o.status === "in-atelier" ? "text-brass" : "text-umber"}`}>
                   {STATUS_LABEL[o.status]}
                 </span>
-                {o.refCode && <span className="label text-[9px] text-brass">via {o.refCode}</span>}
-                <span className={`label text-[9px] ${o.paymentStatus === "paid" ? "text-walnut" : o.paymentStatus === "refunded" ? "text-[#8a3a2a]" : "text-umber"}`}>
-                  {o.paymentStatus}
-                </span>
               </div>
               <p className="label text-[10px] text-umber">
                 {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
@@ -75,35 +67,25 @@ export default function OrdersTab({ data, act }: { data: AdminData; act: Act }) 
                 <p className="pt-2 text-xs text-umber">
                   {o.customer.name} · {o.customer.phone} · {o.customer.address}, PIN {o.customer.pin}
                 </p>
+                {o.note && <p className="text-xs italic text-umber">“{o.note}”</p>}
               </div>
               <div className="text-xs text-umber">
                 <p>Value {formatINR(o.subtotal)}</p>
-                <p>Paid {formatINR(o.paidNow)} ({o.paymentMode})</p>
-                {o.balanceDue > 0 && <p className="text-walnut">Due {formatINR(o.balanceDue)}</p>}
+                {o.customer.email && <p>{o.customer.email}</p>}
               </div>
-              <div className="flex flex-col items-start gap-2">
-                <div className="flex gap-2">
-                  {ORDER_FLOW.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => act({ action: "order-status", id: o.id, status: s })}
-                      disabled={o.status === s}
-                      className={`border px-3 py-2 text-[10px] tracking-wide transition-all ${
-                        o.status === s ? "border-brass bg-bone text-espresso" : "hairline text-umber hover:border-espresso/40"
-                      }`}
-                    >
-                      {STATUS_LABEL[s]}
-                    </button>
-                  ))}
-                </div>
-                {o.paymentStatus !== "refunded" && (
+              <div className="flex items-start gap-2">
+                {ORDER_FLOW.map((s) => (
                   <button
-                    onClick={() => { if (confirm(`Refund ${o.id}? This reverses the payment.`)) act({ action: "order-refund", id: o.id }); }}
-                    className="label text-[10px] text-umber hover:text-[#8a3a2a]"
+                    key={s}
+                    onClick={() => act({ action: "order-status", id: o.id, status: s })}
+                    disabled={o.status === s}
+                    className={`border px-3 py-2 text-[10px] tracking-wide transition-all ${
+                      o.status === s ? "border-brass bg-bone text-espresso" : "hairline text-umber hover:border-espresso/40"
+                    }`}
                   >
-                    Issue refund
+                    {STATUS_LABEL[s]}
                   </button>
-                )}
+                ))}
               </div>
             </div>
           </div>

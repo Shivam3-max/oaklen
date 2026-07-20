@@ -9,39 +9,15 @@ export interface OrderItem {
   fabric?: string;
 }
 
+// A "booking" — the customer reserves pieces by giving contact details.
+// No payment is taken on the site; the concierge follows up.
 export interface Order {
   id: string;
   items: OrderItem[];
   subtotal: number;
-  paymentMode: "full" | "token";
-  paidNow: number;
-  balanceDue: number;
   customer: { name: string; phone: string; email: string; address: string; pin: string };
-  refCode?: string;
-  status: "reserved" | "in-atelier" | "delivered";
-  paymentStatus: "unpaid" | "paid" | "refunded";
-  paymentId?: string;
-  createdAt: string;
-}
-
-export interface Referral {
-  orderId: string;
-  orderValue: number;
-  commission: number;
-  status: "pending" | "confirmed" | "paid";
-  date: string;
-}
-
-export interface Partner {
-  code: string;
-  name: string;
-  firm?: string;
-  tier: "trade" | "build" | "circle";
-  rate: number;
-  email: string;
-  phone: string;
-  clicks: number;
-  referrals: Referral[];
+  note?: string;
+  status: "new" | "in-atelier" | "delivered";
   createdAt: string;
 }
 
@@ -52,7 +28,7 @@ export interface StoredProduct extends Product {
 
 export interface Enquiry {
   id: string;
-  kind: "consultation" | "swatch-kit";
+  kind: "consultation" | "swatch-kit" | "reward";
   name: string;
   phone: string;
   note?: string;
@@ -76,17 +52,11 @@ export interface StoreImpl {
   createProduct(input: Omit<Product, "slug" | "plate">): Promise<StoredProduct>;
   updateProduct(slug: string, patch: Partial<Omit<StoredProduct, "slug" | "createdAt">>): Promise<StoredProduct | null>;
   deleteProduct(slug: string): Promise<boolean>;
-  createOrder(order: Omit<Order, "id" | "createdAt" | "status" | "paymentStatus" | "paymentId"> & { paymentStatus?: Order["paymentStatus"]; paymentId?: string }): Promise<Order>;
+  createOrder(order: Omit<Order, "id" | "createdAt" | "status">): Promise<Order>;
   getOrder(id: string): Promise<Order | null>;
   ordersByPhone(phone: string): Promise<Order[]>;
   listOrders(): Promise<Order[]>;
   setOrderStatus(id: string, status: Order["status"]): Promise<Order | null>;
-  setOrderPayment(id: string, paymentStatus: Order["paymentStatus"], paymentId?: string): Promise<Order | null>;
-  listPartners(): Promise<Partner[]>;
-  getPartner(code: string): Promise<Partner | null>;
-  trackClick(code: string): Promise<boolean>;
-  setReferralStatus(code: string, orderId: string, status: Referral["status"]): Promise<Referral | null>;
-  createPartner(input: { name: string; firm?: string; tier: Partner["tier"]; email: string; phone: string }): Promise<Partner>;
   createEnquiry(input: { kind: Enquiry["kind"]; name: string; phone: string; note?: string }): Promise<Enquiry>;
   listEnquiries(): Promise<Enquiry[]>;
   setEnquiryStatus(id: string, status: Enquiry["status"]): Promise<Enquiry | null>;

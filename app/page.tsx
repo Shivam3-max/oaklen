@@ -74,7 +74,7 @@ export default async function Home() {
       <section className="border-y hairline bg-bone/50">
         <div className="mx-auto grid max-w-[1500px] gap-12 px-6 py-24 lg:grid-cols-2 lg:items-center lg:px-12 lg:py-32">
           <Reveal variant="img">
-            <Plate kind="sofa" ratio="5/4" toneIndex={2} plate={signature.plate} label={`${signature.name} — Signature`} src={img["home-signature"] ?? signature.image} alt={signature.name} />
+            <Plate kind="sofa" ratio="5/4" toneIndex={2} plate={signature.plate} label={`${signature.name} — Signature`} src={img["home-signature"] ?? signature.images?.[0]} alt={signature.name} />
           </Reveal>
           <div className="lg:pl-10">
             <Reveal>
@@ -182,26 +182,26 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 08 — Trade invitation */}
+      {/* 08 — Rewards invitation */}
       <section className="border-t hairline bg-linen/60">
         <div className="mx-auto grid max-w-[1500px] gap-10 px-6 py-20 lg:grid-cols-[1fr_auto] lg:items-center lg:px-12">
           <div>
             <Reveal>
-              <p className="label mb-4 text-brass">Oaklen Trade · Build · Circle</p>
+              <p className="label mb-4 text-brass">Oaklen Rewards</p>
             </Reveal>
             <Reveal delay={80}>
               <h2 className="serif-display max-w-2xl text-4xl lg:text-5xl">
-                Architects, builders, and friends of the house — earn with every commission.
+                Get awesome rewards from Oaklen.
               </h2>
             </Reveal>
             <Reveal delay={160}>
               <p className="mt-4 max-w-lg text-sm text-umber">
-                Up to 12% on referred pieces, trade pricing, a project estimator, and a dashboard that shows every rupee moving toward you.
+                Recommend a piece, furnish a project, or simply love good furniture — join Oaklen Rewards and we’ll take good care of you.
               </p>
             </Reveal>
           </div>
           <Reveal delay={200}>
-            <Link href="/trade" className="btn-line">Become a partner</Link>
+            <Link href="/rewards" className="btn-line">Join rewards</Link>
           </Reveal>
         </div>
       </section>

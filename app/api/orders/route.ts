@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOrder, ordersByPhone, getStoredProduct } from "@/lib/store";
-import { tokenAmount } from "@/data/products";
-import { isRazorpayConfigured, verifyPaymentSignature } from "@/lib/razorpay";
 import { sendOrderConfirmation, sendStaffOrderAlert } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
@@ -21,46 +19,19 @@ export async function POST(req: NextRequest) {
       safeItems.push({ slug: p.slug, name: p.name, line: p.line, qty, price: p.price, fabric: it.fabric });
     }
 
-    const paymentMode = body.paymentMode === "full" ? "full" : "token";
-    const paidNow = paymentMode === "full" ? subtotal : tokenAmount(subtotal);
-
     const c = body.customer ?? {};
     if (!c.name || !c.phone || !c.address || !/^\d{6}$/.test(c.pin ?? "")) {
-      return NextResponse.json({ error: "Missing delivery details" }, { status: 400 });
+      return NextResponse.json({ error: "Missing your details" }, { status: 400 });
     }
-
-    // Payment: when Razorpay is live, the browser has already paid and sends back
-    // the signed result — verify it before we record the order as paid.
-    let paymentStatus: "unpaid" | "paid" = "unpaid";
-    let paymentId: string | undefined;
-    if (isRazorpayConfigured()) {
-      const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = body;
-      if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-        return NextResponse.json({ error: "Payment not completed." }, { status: 400 });
-      }
-      if (!verifyPaymentSignature(razorpayOrderId, razorpayPaymentId, razorpaySignature)) {
-        return NextResponse.json({ error: "Payment could not be verified." }, { status: 400 });
-      }
-      paymentStatus = "paid";
-      paymentId = razorpayPaymentId;
-    }
-
-    const cookieRef = req.cookies.get("oaklen_ref")?.value;
-    const refCode = (body.refCode || cookieRef || "").toString().toUpperCase() || undefined;
 
     const order = await createOrder({
       items: safeItems,
       subtotal,
-      paymentMode,
-      paidNow,
-      balanceDue: subtotal - paidNow,
+      note: body.note || undefined,
       customer: { name: c.name, phone: c.phone, email: c.email ?? "", address: c.address, pin: c.pin },
-      refCode,
-      paymentStatus,
-      paymentId,
     });
 
-    // fire-and-forget notifications (never block the order response on email)
+    // fire-and-forget notifications (never block the response on email)
     void Promise.allSettled([sendOrderConfirmation(order), sendStaffOrderAlert(order)]);
 
     return NextResponse.json({ id: order.id });

@@ -7,14 +7,11 @@ interface OrderView {
   id: string;
   items: { slug: string; name: string; line: string; qty: number; price: number; fabric?: string }[];
   subtotal: number;
-  paymentMode: string;
-  paidNow: number;
-  balanceDue: number;
   status: string;
   createdAt: string;
 }
 
-const STATUS_STEPS = ["reserved", "in-atelier", "delivered"];
+const STATUS_STEPS = ["new", "in-atelier", "delivered"];
 
 export default function AccountPage() {
   const [phone, setPhone] = useState("");
@@ -32,9 +29,9 @@ export default function AccountPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 pb-28 pt-36 lg:px-12">
       <p className="label mb-4 text-brass">Your account</p>
-      <h1 className="serif-display text-6xl">Orders</h1>
+      <h1 className="serif-display text-6xl">Bookings</h1>
       <p className="mt-4 max-w-md text-sm text-umber">
-        Enter the phone number you reserved with — we&apos;ll pull up everything on the bench for you.
+        Enter the phone number you booked with — we&apos;ll pull up everything for you.
       </p>
 
       <div className="mt-10 flex max-w-md items-end gap-4">
@@ -53,7 +50,7 @@ export default function AccountPage() {
       {orders !== null && (
         <div className="mt-14 space-y-8">
           {orders.length === 0 && (
-            <p className="font-serif text-2xl text-umber">No reservations under that number yet.</p>
+            <p className="font-serif text-2xl text-umber">No bookings under that number yet.</p>
           )}
           {orders.map((o) => {
             const stepIndex = STATUS_STEPS.indexOf(o.status);
@@ -76,7 +73,7 @@ export default function AccountPage() {
                   ))}
                 </div>
                 <div className="mt-2 flex justify-between">
-                  {["Reserved", "In the atelier", "Delivered"].map((s) => (
+                  {["Booked", "In the atelier", "Delivered"].map((s) => (
                     <span key={s} className="label text-[9px] text-umber">{s}</span>
                   ))}
                 </div>
@@ -87,12 +84,9 @@ export default function AccountPage() {
                       <span>{formatINR(it.price * it.qty)}</span>
                     </div>
                   ))}
-                  <div className="flex justify-between pt-2 text-umber">
-                    <span>Paid ({o.paymentMode})</span><span>{formatINR(o.paidNow)}</span>
+                  <div className="flex justify-between border-t hairline pt-3 font-serif">
+                    <span>Total value</span><span>{formatINR(o.subtotal)}</span>
                   </div>
-                  {o.balanceDue > 0 && (
-                    <div className="flex justify-between text-walnut"><span>Balance on delivery</span><span>{formatINR(o.balanceDue)}</span></div>
-                  )}
                 </div>
               </div>
             );

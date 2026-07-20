@@ -26,8 +26,8 @@ export default function RefundsPage() {
 
       <h2 className="serif-display pt-4 text-2xl">How refunds are paid</h2>
       <p>
-        Refunds are issued to your original payment method through our payment partner, Razorpay. Once we approve a
-        refund it typically reaches your account within 5–7 business days, depending on your bank.
+        Since no payment is taken on this website, any refund applies only to amounts you paid us directly — for example
+        on delivery. Approved refunds are returned by the same method and typically reach you within 5–7 business days.
       </p>
 
       <h2 className="serif-display pt-4 text-2xl">What isn’t covered</h2>

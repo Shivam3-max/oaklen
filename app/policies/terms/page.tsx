@@ -18,18 +18,17 @@ export default function TermsPage() {
         and finish are inherent to the material and are not defects.
       </p>
 
-      <h2 className="serif-display pt-4 text-2xl">Reserving and paying</h2>
+      <h2 className="serif-display pt-4 text-2xl">Booking</h2>
       <p>
-        You may reserve a piece with a token amount (15% of the value) and pay the balance on delivery, or pay in full at
-        checkout. Prices are in Indian Rupees and include applicable taxes unless stated otherwise. We reserve the right
-        to correct any pricing errors before your order is confirmed.
+        You book a piece by giving your contact details on this website — no payment is taken online. Our team will call
+        you to confirm the piece, the price, and delivery. Prices are in Indian Rupees and include applicable taxes
+        unless stated otherwise. We reserve the right to correct any pricing errors before your booking is confirmed.
       </p>
 
       <h2 className="serif-display pt-4 text-2xl">Cancellation</h2>
       <p>
-        You may cancel a made-to-order piece within 48 hours of placing it for a full refund of any amount paid. After
-        production begins, the token amount becomes non-refundable as work and materials have been committed, but you may
-        still cancel the balance.
+        You may cancel a made-to-order piece within 48 hours of confirming it. After production begins, any advance you
+        have paid toward materials may be retained to cover work already committed.
       </p>
 
       <h2 className="serif-display pt-4 text-2xl">Warranty</h2>
@@ -38,10 +37,10 @@ export default function TermsPage() {
         does not cover ordinary wear, accidental damage, or the natural ageing of wood, leather and fabric.
       </p>
 
-      <h2 className="serif-display pt-4 text-2xl">Partner programme</h2>
+      <h2 className="serif-display pt-4 text-2xl">Oaklen Rewards</h2>
       <p>
-        Commissions under the Oaklen Trade, Build and Circle programmes are earned on delivered orders and paid monthly.
-        We may adjust or withhold a commission where an order is cancelled, returned, or found to be fraudulent.
+        Oaklen Rewards is open to anyone. Rewards are offered at our discretion and may change over time. We may adjust
+        or withhold a reward where a booking is cancelled, returned, or found to be fraudulent.
       </p>
 
       <h2 className="serif-display pt-4 text-2xl">Contact</h2>

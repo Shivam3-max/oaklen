@@ -19,32 +19,16 @@ enum ProductStyle {
   classic
 }
 
-enum PaymentMode {
-  full
-  token
-}
-
 enum OrderStatus {
-  reserved
+  new
   in_atelier
   delivered
-}
-
-enum PartnerTier {
-  trade
-  build
-  circle
-}
-
-enum ReferralStatus {
-  pending
-  confirmed
-  paid
 }
 
 enum EnquiryKind {
   consultation
   swatch_kit
+  reward
 }
 
 enum EnquiryStatus {
@@ -70,7 +54,7 @@ model Product {
   plate      Int
   signature  Boolean         @default(false)
   active     Boolean         @default(true)
-  image      String?         @db.LongText
+  images     Json
   createdAt  DateTime        @default(now())
 
   @@index([category])
@@ -85,29 +69,17 @@ model SiteImage {
 model Order {
   id          String      @id
   subtotal    Int
-  paymentMode PaymentMode
-  paidNow     Int
-  balanceDue  Int
   custName    String
   custPhone   String
   custEmail   String
   custAddress String      @db.Text
   custPin     String
-  refCode       String?
-  status        OrderStatus   @default(reserved)
-  paymentStatus PaymentStatus @default(unpaid)
-  paymentId     String?
-  createdAt     DateTime      @default(now())
-  items         OrderItem[]
+  note        String?     @db.Text
+  status      OrderStatus @default(new)
+  createdAt   DateTime    @default(now())
+  items       OrderItem[]
 
   @@index([custPhone])
-  @@index([refCode])
-}
-
-enum PaymentStatus {
-  unpaid
-  paid
-  refunded
 }
 
 model OrderItem {
@@ -120,32 +92,6 @@ model OrderItem {
   qty     Int
   price   Int
   fabric  String?
-}
-
-model Partner {
-  code      String      @id
-  name      String
-  firm      String?
-  tier      PartnerTier
-  rate      Int
-  email     String
-  phone     String
-  clicks    Int         @default(0)
-  createdAt DateTime    @default(now())
-  referrals Referral[]
-}
-
-model Referral {
-  id          Int            @id @default(autoincrement())
-  partner     Partner        @relation(fields: [partnerCode], references: [code], onDelete: Cascade)
-  partnerCode String
-  orderId     String
-  orderValue  Int
-  commission  Int
-  status      ReferralStatus @default(pending)
-  date        DateTime       @default(now())
-
-  @@index([partnerCode])
 }
 
 model Enquiry {

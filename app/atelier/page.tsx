@@ -81,7 +81,7 @@ export default async function AtelierPage() {
           </Reveal>
           <Reveal delay={150}>
             <Link href="/shop" className="btn-line mt-12 !border-ivory !text-ivory hover:!bg-ivory hover:!text-espresso">
-              Commission a piece
+              Book a piece
             </Link>
           </Reveal>
         </div>

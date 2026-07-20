@@ -10,7 +10,7 @@ const LINKS = [
   { href: "/atelier", label: "Atelier" },
   { href: "/lookbook", label: "Rooms" },
   { href: "/tools", label: "Tools" },
-  { href: "/trade", label: "Trade" },
+  { href: "/rewards", label: "Rewards" },
 ];
 
 export default function Nav() {

@@ -2,7 +2,7 @@ import { BRAND, addressLine } from "@/data/brand";
 import type { Order } from "./types";
 
 // Email is optional: without RESEND_API_KEY set, these no-op (and log in dev)
-// so the demo works. Set RESEND_API_KEY + EMAIL_FROM to switch on real email.
+// so the site still runs. Set RESEND_API_KEY + EMAIL_FROM to switch on email.
 
 const FROM = process.env.EMAIL_FROM || `Oaklen <onboarding@resend.dev>`;
 const STAFF = process.env.EMAIL_STAFF || BRAND.email;
@@ -49,30 +49,29 @@ function itemRows(order: Order) {
 export async function sendOrderConfirmation(order: Order) {
   if (!order.customer.email) return false;
   const body = `
-    <p style="font-size:20px;margin:0 0 16px">It’s on the bench, ${order.customer.name.split(" ")[0]}.</p>
-    <p style="font-size:14px;line-height:1.7;color:#6B5E4E;margin:0 0 20px">Thank you for your reservation <strong>${order.id}</strong>. Our concierge will be in touch within a day, and again when your piece enters the workshop.</p>
+    <p style="font-size:20px;margin:0 0 16px">We’ve got your booking, ${order.customer.name.split(" ")[0]}.</p>
+    <p style="font-size:14px;line-height:1.7;color:#6B5E4E;margin:0 0 20px">Thank you for booking <strong>${order.id}</strong>. Our team will call you shortly to confirm the details and arrange delivery — there’s nothing more to pay online.</p>
     <table style="width:100%;font-size:14px;border-collapse:collapse">${itemRows(order)}
-      <tr><td style="padding-top:12px;border-top:1px solid rgba(43,33,23,0.14)">Paid now (${order.paymentMode})</td><td style="padding-top:12px;border-top:1px solid rgba(43,33,23,0.14);text-align:right">${formatINR(order.paidNow)}</td></tr>
-      ${order.balanceDue > 0 ? `<tr><td style="color:#6B5E4E">Balance on delivery</td><td style="text-align:right;color:#6B5E4E">${formatINR(order.balanceDue)}</td></tr>` : ""}
+      <tr><td style="padding-top:12px;border-top:1px solid rgba(43,33,23,0.14)">Total</td><td style="padding-top:12px;border-top:1px solid rgba(43,33,23,0.14);text-align:right">${formatINR(order.subtotal)}</td></tr>
     </table>
-    <p style="font-size:13px;color:#6B5E4E;margin-top:20px">Delivered to: ${order.customer.address}, ${order.customer.pin}</p>`;
-  return send(order.customer.email, `Your Oaklen reservation ${order.id}`, shell(body));
+    <p style="font-size:13px;color:#6B5E4E;margin-top:20px">Delivering to: ${order.customer.address}, ${order.customer.pin}</p>`;
+  return send(order.customer.email, `Your Oaklen booking ${order.id}`, shell(body));
 }
 
 export async function sendStaffOrderAlert(order: Order) {
   const body = `
-    <p style="font-size:18px;margin:0 0 12px">New order — ${order.id}</p>
+    <p style="font-size:18px;margin:0 0 12px">New booking — ${order.id}</p>
     <table style="width:100%;font-size:14px;border-collapse:collapse">${itemRows(order)}
       <tr><td style="padding-top:12px;border-top:1px solid rgba(43,33,23,0.14)">Total</td><td style="padding-top:12px;border-top:1px solid rgba(43,33,23,0.14);text-align:right">${formatINR(order.subtotal)}</td></tr>
-      <tr><td>Paid now</td><td style="text-align:right">${formatINR(order.paidNow)} (${order.paymentStatus})</td></tr>
     </table>
-    <p style="font-size:13px;color:#6B5E4E;margin-top:16px">${order.customer.name} · ${order.customer.phone} · ${order.customer.email || "no email"}<br/>${order.customer.address}, ${order.customer.pin}${order.refCode ? `<br/>Referred by ${order.refCode}` : ""}</p>`;
-  return send(STAFF, `New Oaklen order ${order.id} — ${formatINR(order.paidNow)}`, shell(body));
+    <p style="font-size:13px;color:#6B5E4E;margin-top:16px">${order.customer.name} · ${order.customer.phone} · ${order.customer.email || "no email"}<br/>${order.customer.address}, ${order.customer.pin}${order.note ? `<br/>Note: ${order.note}` : ""}</p>`;
+  return send(STAFF, `New Oaklen booking ${order.id} — ${formatINR(order.subtotal)}`, shell(body));
 }
 
 export async function sendEnquiryAlert(kind: string, name: string, phone: string, note?: string) {
+  const label = kind === "swatch-kit" ? "swatch kit request" : kind === "reward" ? "rewards sign-up" : "consultation enquiry";
   const body = `
-    <p style="font-size:18px;margin:0 0 12px">New ${kind === "swatch-kit" ? "swatch kit request" : "consultation enquiry"}</p>
+    <p style="font-size:18px;margin:0 0 12px">New ${label}</p>
     <p style="font-size:14px;line-height:1.7">${name}<br/>${phone}${note ? `<br/><em style="color:#6B5E4E">“${note}”</em>` : ""}</p>`;
-  return send(STAFF, `New Oaklen enquiry — ${name}`, shell(body));
+  return send(STAFF, `New Oaklen ${label} — ${name}`, shell(body));
 }

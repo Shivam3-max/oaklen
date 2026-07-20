@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Plate from "@/components/Plate";
 import { useCart } from "@/components/CartContext";
-import { Product, fabricById, formatINR, tokenAmount } from "@/data/products";
+import { Product, fabricById, formatINR } from "@/data/products";
 import { whatsappLink } from "@/data/brand";
 
 const SERVICEABLE_PREFIX = ["11", "12", "20", "40", "41", "56", "60", "70", "30", "50", "38", "39", "18", "26"];
@@ -18,13 +18,8 @@ export default function ProductDetail({ product }: { product: Product }) {
   const [openSection, setOpenSection] = useState<string | null>("wood");
   const [added, setAdded] = useState(false);
 
-  const emi = useMemo(() => {
-    const principal = product.price;
-    const months = 12;
-    const r = 0.14 / 12;
-    const m = (principal * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
-    return Math.round(m);
-  }, [product.price]);
+  const images = product.images ?? [];
+  const [activeImg, setActiveImg] = useState(0);
 
   const checkPin = () => {
     if (!/^\d{6}$/.test(pin)) {
@@ -42,18 +37,43 @@ export default function ProductDetail({ product }: { product: Product }) {
   const sections: [string, string, string][] = [
     ["wood", "Wood & build", `${product.wood}. Joined with mortise-and-tenon joinery, finished by hand and inspected twice before it leaves the atelier.`],
     ["care", "Care", "Dust with a dry cotton cloth. Keep two feet from direct heat. Fabric covers accept professional dry cleaning; wood asks only for a yearly wax."],
-    ["warranty", "Warranty & returns", "8-year structural warranty on every frame. Seven-day return window after delivery — we collect, no questions, full refund of anything paid."],
+    ["warranty", "Warranty & returns", "8-year structural warranty on every frame. Seven-day return window after delivery — we collect, no questions asked."],
   ];
 
   return (
     <section className="mx-auto grid max-w-[1500px] gap-12 px-6 py-12 lg:grid-cols-[1.15fr_1fr] lg:px-12">
       {/* gallery */}
       <div className="space-y-4 lg:sticky lg:top-28 lg:self-start">
-        <Plate kind={product.silhouette} ratio="5/4" plate={product.plate} label={product.name} toneIndex={product.plate} src={product.image} alt={`${product.name} — ${product.line}`} />
-        <div className="grid grid-cols-2 gap-4">
-          <Plate kind="detail" ratio="4/3" plate={`${product.plate}a`} label="Grain study" toneIndex={product.plate + 1} />
-          <Plate kind="craft" ratio="4/3" plate={`${product.plate}b`} label="Maker's hand" toneIndex={product.plate + 2} />
-        </div>
+        <Plate
+          kind={product.silhouette}
+          ratio="5/4"
+          plate={product.plate}
+          label={product.name}
+          toneIndex={product.plate}
+          src={images[activeImg]}
+          alt={`${product.name} — ${product.line}`}
+        />
+        {images.length > 1 ? (
+          <div className="grid grid-cols-4 gap-3">
+            {images.map((src, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveImg(i)}
+                className={`relative overflow-hidden border transition-all ${i === activeImg ? "border-brass" : "hairline hover:border-espresso/40"}`}
+                style={{ aspectRatio: "1/1" }}
+                aria-label={`View photo ${i + 1}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={src} alt="" className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        ) : images.length === 0 ? (
+          <div className="grid grid-cols-2 gap-4">
+            <Plate kind="detail" ratio="4/3" plate={`${product.plate}a`} label="Grain study" toneIndex={product.plate + 1} />
+            <Plate kind="craft" ratio="4/3" plate={`${product.plate}b`} label="Maker's hand" toneIndex={product.plate + 2} />
+          </div>
+        ) : null}
       </div>
 
       {/* story */}
@@ -64,9 +84,8 @@ export default function ProductDetail({ product }: { product: Product }) {
 
         <p className="mt-6 leading-relaxed text-umber">{product.story}</p>
 
-        <div className="mt-8 flex items-baseline gap-6 border-t hairline pt-6">
+        <div className="mt-8 border-t hairline pt-6">
           <p className="font-serif text-3xl">{formatINR(product.price)}</p>
-          <p className="text-xs text-umber">or {formatINR(emi)}/mo × 12 · EMI available</p>
         </div>
 
         {product.fabrics.length > 0 && (
@@ -98,14 +117,11 @@ export default function ProductDetail({ product }: { product: Product }) {
           <div><p className="label mb-1 text-[9px] text-umber">Build time</p>{product.leadDays} days, made for you</div>
         </div>
 
-        {/* reserve */}
+        {/* book */}
         <div className="mt-10 border hairline bg-bone/60 p-6">
-          <div className="flex items-baseline justify-between">
-            <p className="label text-umber">Reserve with a token</p>
-            <p className="font-serif text-2xl">{formatINR(tokenAmount(product.price))}</p>
-          </div>
+          <p className="label text-umber">Book this piece</p>
           <p className="mt-2 text-xs leading-relaxed text-umber">
-            Pay 15% now to put this piece on the bench. Balance on delivery. Or pay in full at checkout — your choice there.
+            Reserve it with your contact details — no payment online. Our team calls you to confirm and arrange delivery.
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <button
@@ -115,7 +131,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                 router.push("/checkout");
               }}
             >
-              Reserve this piece
+              Book this piece
             </button>
             <button
               className="btn-line flex-1 justify-center"
@@ -134,7 +150,7 @@ export default function ProductDetail({ product }: { product: Product }) {
             rel="noreferrer"
             className="label mt-4 inline-block text-[10px] text-umber underline-offset-4 hover:text-brass hover:underline"
           >
-            Or speak to the concierge on WhatsApp
+            Or speak to us on WhatsApp
           </a>
         </div>
 

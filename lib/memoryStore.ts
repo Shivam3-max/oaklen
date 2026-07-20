@@ -1,15 +1,12 @@
 import { PRODUCTS as SEED_PRODUCTS, Product } from "@/data/products";
-import type { Order, Partner, Referral, StoredProduct, Enquiry, StoreImpl } from "./types";
+import type { Order, StoredProduct, Enquiry, StoreImpl } from "./types";
 
-// No DATABASE_URL is set, so the site runs on this in-memory demo store instead
-// of Prisma/MySQL — good for showing the design and flows to a client with zero
-// setup, but data lives only in process memory: it resets on server restarts and
-// isn't shared across serverless instances. Add DATABASE_URL to switch to the
-// real, persistent backend (see lib/store.ts) with no other code changes needed.
+// In-memory fallback used only when DATABASE_URL is not set (e.g. local runs
+// before the database is wired). Data lives in process memory and does not
+// persist — set DATABASE_URL for the real, saved store.
 
 interface MemDB {
   orders: Order[];
-  partners: Partner[];
   products: StoredProduct[];
   enquiries: Enquiry[];
   subscribers: { email: string; createdAt: string }[];
@@ -21,40 +18,9 @@ function seedProducts(): StoredProduct[] {
 }
 
 function freshDB(): MemDB {
-  return {
-    orders: [],
-    products: seedProducts(),
-    enquiries: [],
-    subscribers: [],
-    siteImages: {},
-    partners: [
-      {
-        code: "ARJUN10", name: "Arjun Mehta", firm: "Studio Mehta Architects", tier: "trade", rate: 10,
-        email: "arjun@studiomehta.in", phone: "+91 98100 00000", clicks: 142, createdAt: "2026-05-12T09:00:00Z",
-        referrals: [
-          { orderId: "OAK-2417", orderValue: 296000, commission: 29600, status: "paid", date: "2026-05-28T10:00:00Z" },
-          { orderId: "OAK-2561", orderValue: 168000, commission: 16800, status: "confirmed", date: "2026-06-14T10:00:00Z" },
-          { orderId: "OAK-2688", orderValue: 424000, commission: 42400, status: "pending", date: "2026-07-01T10:00:00Z" },
-        ],
-      },
-      {
-        code: "RAVIBUILD", name: "Ravi Khanna", firm: "Khanna Constructions", tier: "build", rate: 7,
-        email: "ravi@khannabuild.in", phone: "+91 98200 00000", clicks: 61, createdAt: "2026-06-02T09:00:00Z",
-        referrals: [
-          { orderId: "OAK-2590", orderValue: 342000, commission: 23940, status: "confirmed", date: "2026-06-20T10:00:00Z" },
-        ],
-      },
-      {
-        code: "MEERA5", name: "Meera Nair", tier: "circle", rate: 5,
-        email: "meera.n@gmail.com", phone: "+91 99300 00000", clicks: 18, createdAt: "2026-06-18T09:00:00Z",
-        referrals: [],
-      },
-    ],
-  };
+  return { orders: [], products: seedProducts(), enquiries: [], subscribers: [], siteImages: {} };
 }
 
-// module-scope + globalThis: survives hot reloads in dev and reuse within a
-// single warm serverless instance, though not across cold starts/instances.
 const g = globalThis as unknown as { __oaklenMemDB?: MemDB };
 const db: MemDB = g.__oaklenMemDB ?? (g.__oaklenMemDB = freshDB());
 
@@ -70,12 +36,10 @@ export const memoryStore: StoreImpl = {
   async getSiteImages() {
     return { ...db.siteImages };
   },
-
   async setSiteImage(key, url) {
     db.siteImages[key] = url;
     return true;
   },
-
   async clearSiteImage(key) {
     delete db.siteImages[key];
     return true;
@@ -84,11 +48,9 @@ export const memoryStore: StoreImpl = {
   async listProducts(includeInactive = false) {
     return includeInactive ? db.products : db.products.filter((p) => p.active);
   },
-
   async getStoredProduct(slug) {
     return db.products.find((p) => p.slug === slug && p.active) ?? null;
   },
-
   async createProduct(input: Omit<Product, "slug" | "plate">) {
     let slug = slugify(input.name, input.line);
     let n = 2;
@@ -98,14 +60,12 @@ export const memoryStore: StoreImpl = {
     db.products.push(product);
     return product;
   },
-
   async updateProduct(slug, patch) {
     const p = db.products.find((x) => x.slug === slug);
     if (!p) return null;
     Object.assign(p, patch);
     return p;
   },
-
   async deleteProduct(slug) {
     const before = db.products.length;
     db.products = db.products.filter((p) => p.slug !== slug);
@@ -115,94 +75,25 @@ export const memoryStore: StoreImpl = {
   async createOrder(order) {
     let id = randomOrderId();
     while (db.orders.some((o) => o.id === id)) id = randomOrderId();
-    const full: Order = {
-      ...order,
-      id,
-      status: "reserved",
-      paymentStatus: order.paymentStatus ?? "unpaid",
-      createdAt: new Date().toISOString(),
-    };
+    const full: Order = { ...order, id, status: "new", createdAt: new Date().toISOString() };
     db.orders.push(full);
-    if (order.refCode) {
-      const partner = db.partners.find((p) => p.code === order.refCode!.toUpperCase());
-      if (partner) {
-        partner.referrals.push({
-          orderId: id,
-          orderValue: order.subtotal,
-          commission: Math.round((order.subtotal * partner.rate) / 100),
-          status: "pending",
-          date: full.createdAt,
-        });
-      }
-    }
     return full;
   },
-
   async getOrder(id) {
     return db.orders.find((o) => o.id === id) ?? null;
   },
-
   async ordersByPhone(phone) {
     const digits = phone.replace(/\D/g, "").slice(-10);
     return db.orders.filter((o) => o.customer.phone.replace(/\D/g, "").endsWith(digits));
   },
-
   async listOrders() {
     return [...db.orders].reverse();
   },
-
-  async setOrderPayment(id, paymentStatus, paymentId) {
-    const order = db.orders.find((o) => o.id === id);
-    if (!order) return null;
-    order.paymentStatus = paymentStatus;
-    if (paymentId) order.paymentId = paymentId;
-    return order;
-  },
-
   async setOrderStatus(id, status) {
     const order = db.orders.find((o) => o.id === id);
     if (!order) return null;
     order.status = status;
-    if (status === "delivered") {
-      for (const p of db.partners) {
-        const ref = p.referrals.find((r) => r.orderId === id && r.status === "pending");
-        if (ref) ref.status = "confirmed";
-      }
-    }
     return order;
-  },
-
-  async listPartners() {
-    return db.partners;
-  },
-
-  async getPartner(code) {
-    return db.partners.find((p) => p.code === code.toUpperCase()) ?? null;
-  },
-
-  async trackClick(code) {
-    const p = db.partners.find((x) => x.code === code.toUpperCase());
-    if (p) p.clicks += 1;
-    return !!p;
-  },
-
-  async setReferralStatus(code, orderId, status): Promise<Referral | null> {
-    const partner = db.partners.find((p) => p.code === code.toUpperCase());
-    const ref = partner?.referrals.find((r) => r.orderId === orderId);
-    if (!partner || !ref) return null;
-    ref.status = status;
-    return ref;
-  },
-
-  async createPartner(input) {
-    const base = input.name.split(" ")[0].toUpperCase().replace(/[^A-Z]/g, "").slice(0, 8) || "OAKLEN";
-    let code = base;
-    let n = 1;
-    while (db.partners.some((p) => p.code === code)) code = base + String(n++);
-    const rate = input.tier === "trade" ? 10 : input.tier === "build" ? 7 : 5;
-    const partner: Partner = { ...input, code, rate, clicks: 0, referrals: [], createdAt: new Date().toISOString() };
-    db.partners.push(partner);
-    return partner;
   },
 
   async createEnquiry(input) {
@@ -210,11 +101,9 @@ export const memoryStore: StoreImpl = {
     db.enquiries.push(enquiry);
     return enquiry;
   },
-
   async listEnquiries() {
     return [...db.enquiries].reverse();
   },
-
   async setEnquiryStatus(id, status) {
     const e = db.enquiries.find((x) => x.id === id);
     if (!e) return null;
@@ -228,7 +117,6 @@ export const memoryStore: StoreImpl = {
     }
     return true;
   },
-
   async listSubscribers() {
     return [...db.subscribers].reverse();
   },

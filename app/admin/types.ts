@@ -1,18 +1,16 @@
-import type { StoredProduct, Order, Partner, Enquiry, Subscriber } from "@/lib/store";
+import type { StoredProduct, Order, Enquiry, Subscriber } from "@/lib/store";
 
-export type { StoredProduct, Order, Partner, Enquiry, Subscriber };
+export type { StoredProduct, Order, Enquiry, Subscriber };
 
 export interface AdminData {
   orders: Order[];
-  partners: Partner[];
   products: StoredProduct[];
   enquiries: Enquiry[];
   subscribers: Subscriber[];
   siteImages?: Record<string, string>;
-  demoMode?: boolean;
+  dbConnected?: boolean;
 }
 
 export type Act = (body: Record<string, unknown>) => Promise<string | null>;
 
-export const TIER_LABEL: Record<string, string> = { trade: "Trade", build: "Build", circle: "Circle" };
-export const STATUS_LABEL: Record<string, string> = { reserved: "Reserved", "in-atelier": "In the atelier", delivered: "Delivered" };
+export const STATUS_LABEL: Record<string, string> = { new: "New", "in-atelier": "In the atelier", delivered: "Delivered" };

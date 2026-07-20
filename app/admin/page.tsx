@@ -5,11 +5,10 @@ import type { AdminData } from "./types";
 import OverviewTab from "./tabs/OverviewTab";
 import OrdersTab from "./tabs/OrdersTab";
 import ProductsTab from "./tabs/ProductsTab";
-import PartnersTab from "./tabs/PartnersTab";
 import InboxTab from "./tabs/InboxTab";
 import MediaTab from "./tabs/MediaTab";
 
-const TABS = ["overview", "orders", "products", "media", "partners", "inbox"] as const;
+const TABS = ["overview", "bookings", "products", "media", "inbox"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -55,9 +54,7 @@ export default function AdminPage() {
       <div className="mx-auto max-w-md px-6 pb-28 pt-44 lg:px-0">
         <p className="label mb-4 text-brass">The back office</p>
         <h1 className="serif-display text-6xl">Admin.</h1>
-        <p className="mt-4 text-sm text-umber">
-          Staff only. Enter the house key. (Demo key: <span className="text-espresso">oaklen2026</span>)
-        </p>
+        <p className="mt-4 text-sm text-umber">Staff only. Enter the house key.</p>
         <div className="mt-10 flex items-end gap-4">
           <input
             type="password"
@@ -102,17 +99,16 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {data.demoMode && (
+      {data.dbConnected === false && (
         <p className="label mt-6 border border-brass bg-bone/60 px-4 py-3 text-[10px] text-walnut">
-          Demo mode — no database connected. Changes here live only in server memory and can reset at any time. Add DATABASE_URL to switch to the real database.
+          No database connected — changes here are not being saved. Set DATABASE_URL to save your products, images and bookings.
         </p>
       )}
 
       {tab === "overview" && <OverviewTab data={data} />}
-      {tab === "orders" && <OrdersTab data={data} act={act} />}
+      {tab === "bookings" && <OrdersTab data={data} act={act} />}
       {tab === "products" && <ProductsTab data={data} act={act} />}
       {tab === "media" && <MediaTab data={data} act={act} />}
-      {tab === "partners" && <PartnersTab data={data} act={act} />}
       {tab === "inbox" && <InboxTab data={data} act={act} />}
     </div>
   );

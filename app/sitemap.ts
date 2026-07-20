@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = BRAND.domain;
   const staticPaths = [
-    "", "/shop", "/atelier", "/lookbook", "/tools", "/trade", "/journal", "/visit",
+    "", "/shop", "/atelier", "/lookbook", "/tools", "/rewards", "/journal", "/visit",
     "/policies/privacy", "/policies/terms", "/policies/shipping", "/policies/refunds",
   ];
 

@@ -35,12 +35,12 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <p className="label mb-6 text-umber">Partners</p>
+            <p className="label mb-6 text-umber">More</p>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/trade" className="hover:text-brass">Oaklen Trade</Link></li>
-              <li><Link href="/trade" className="hover:text-brass">Oaklen Build</Link></li>
-              <li><Link href="/trade" className="hover:text-brass">Oaklen Circle</Link></li>
-              <li><Link href="/trade/dashboard" className="hover:text-brass">Partner Dashboard</Link></li>
+              <li><Link href="/rewards" className="hover:text-brass">Oaklen Rewards</Link></li>
+              <li><Link href="/lookbook" className="hover:text-brass">Rooms</Link></li>
+              <li><Link href="/tools" className="hover:text-brass">Tools</Link></li>
+              <li><Link href="/account" className="hover:text-brass">Your Bookings</Link></li>
             </ul>
             <p className="label mt-8 text-umber">Concierge</p>
             <p className="mt-3 text-sm">{BRAND.phoneDisplay}<br />{BRAND.email}</p>

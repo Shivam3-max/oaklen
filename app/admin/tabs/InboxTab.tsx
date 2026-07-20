@@ -3,7 +3,7 @@
 import type { AdminData, Act, Enquiry } from "../types";
 
 const ENQUIRY_FLOW: Enquiry["status"][] = ["new", "contacted", "closed"];
-const KIND_LABEL: Record<string, string> = { consultation: "Design consultation", "swatch-kit": "Swatch kit" };
+const KIND_LABEL: Record<string, string> = { consultation: "Design consultation", "swatch-kit": "Swatch kit", reward: "Rewards sign-up" };
 
 export default function InboxTab({ data, act }: { data: AdminData; act: Act }) {
   return (

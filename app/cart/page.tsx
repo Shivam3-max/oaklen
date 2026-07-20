@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Plate from "@/components/Plate";
 import { useCart } from "@/components/CartContext";
-import { fabricById, formatINR, tokenAmount } from "@/data/products";
+import { fabricById, formatINR } from "@/data/products";
 
 export default function CartPage() {
   const { lines, setQty, remove, subtotal, product } = useCart();
@@ -58,18 +58,15 @@ export default function CartPage() {
             <p className="label mb-6 text-umber">Summary</p>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between"><span>Subtotal</span><span>{formatINR(subtotal)}</span></div>
-              <div className="flex justify-between text-umber"><span>Delivery & assembly</span><span>On the house</span></div>
+              <div className="flex justify-between text-umber"><span>Delivery &amp; assembly</span><span>On the house</span></div>
               <div className="flex justify-between border-t hairline pt-3 font-serif text-lg">
                 <span>Total</span><span>{formatINR(subtotal)}</span>
               </div>
-              <div className="flex justify-between pt-2 text-walnut">
-                <span>Reserve today with</span><span>{formatINR(tokenAmount(subtotal))}</span>
-              </div>
             </div>
             <Link href="/checkout" className="btn-solid mt-8 w-full justify-center">
-              Proceed to reserve
+              Proceed to book
             </Link>
-            <p className="mt-4 text-center text-[11px] text-umber">Full payment or 15% token — choose at checkout</p>
+            <p className="mt-4 text-center text-[11px] text-umber">No payment online — just your contact details</p>
           </aside>
         </div>
       )}
