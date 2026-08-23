@@ -126,9 +126,27 @@ body {
   transform: scale(1);
 }
 
-@keyframes drift {
-  from { transform: translateY(0); }
-  to { transform: translateY(-3%); }
+/* ---- Plane Reveal hero ---- */
+/* Rested state is ALREADY revealed (timber slid off to the right), so the hero
+   is correct even if the animation never runs. On load, HomeHero.tsx drives the
+   timber from covering -> off via the Web Animations API (a plane pushing the
+   shaving away), revealing the finished piece beneath. */
+.plane-raw {
+  transform: translateX(101%);
+  will-change: transform;
+  background:
+    repeating-linear-gradient(96deg, rgba(74,54,38,0) 0 6px, rgba(74,54,38,0.16) 7px, rgba(74,54,38,0.02) 9px 18px),
+    repeating-linear-gradient(94deg, rgba(43,33,23,0.05) 0 22px, rgba(120,90,60,0.10) 23px 46px),
+    linear-gradient(100deg, #7a5c43, #9a7a56 40%, #6f5238);
+}
+/* the plane's blade edge, pinned to the trailing (right) side of the timber */
+.plane-blade {
+  top: 0;
+  bottom: 0;
+  right: -3px;
+  width: 3px;
+  background: linear-gradient(var(--color-ivory), rgba(247, 244, 239, 0.35));
+  box-shadow: 0 0 30px 12px rgba(247, 244, 239, 0.75);
 }
 
 input, select, textarea {

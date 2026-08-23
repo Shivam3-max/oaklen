@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import CategoryIndex from "@/components/home/CategoryIndex";
 import SplitWorlds from "@/components/home/SplitWorlds";
 import ShoppableRoom from "@/components/home/ShoppableRoom";
+import HomeHero from "@/components/home/HomeHero";
 import { formatINR } from "@/data/products";
 import { listProducts, getSiteImages } from "@/lib/store";
 
@@ -22,43 +23,8 @@ export default async function Home() {
 
   return (
     <>
-      {/* 01 — Hero */}
-      <section className="relative flex min-h-svh flex-col justify-end overflow-hidden px-6 pb-14 pt-36 lg:px-12">
-        <div className="pointer-events-none absolute right-0 top-0 hidden h-full w-[44%] lg:block">
-          <div style={{ animation: "drift 14s ease-in-out infinite alternate" }} className="h-[106%]">
-            <Plate kind="room" ratio="auto" toneIndex={1} bare className="h-full" src={img["home-hero"]} alt="Oaklen interior" />
-          </div>
-        </div>
-        <div className="relative z-[2] max-w-[1500px]">
-          <Reveal>
-            <p className="label mb-6 flex items-center gap-4 text-brass">
-              <span className="inline-block h-px w-12 bg-brass" />
-              An Indian furniture atelier · Est. plate No. 001
-            </p>
-          </Reveal>
-          <Reveal delay={120}>
-            <h1 className="serif-display max-w-5xl text-[13.5vw] leading-[0.96] sm:text-8xl lg:text-[9.5rem]">
-              Furniture that <em className="text-walnut">outlives</em> trends.
-            </h1>
-          </Reveal>
-          <Reveal delay={260}>
-            <div className="mt-10 flex flex-wrap items-center gap-8">
-              <Link href="/shop" className="btn-solid">Reserve a piece</Link>
-              <Link href="/atelier" className="label border-b border-espresso/40 pb-1 transition-colors hover:border-brass hover:text-brass">
-                Inside the atelier
-              </Link>
-            </div>
-          </Reveal>
-          <Reveal delay={380}>
-            <div className="mt-16 flex flex-wrap gap-x-12 gap-y-3 text-[13px] text-umber">
-              <span>Solid wood only</span>
-              <span>Made to order · 14–45 days</span>
-              <span>8-year structural warranty</span>
-              <span>Delivered & assembled, pan-India</span>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      {/* 01 — Hero (Plane Reveal) */}
+      <HomeHero heroSrc={img["home-hero"]} />
 
       {/* 02 — Category index */}
       <section className="mx-auto max-w-[1500px] px-6 py-24 lg:px-12 lg:py-32">
