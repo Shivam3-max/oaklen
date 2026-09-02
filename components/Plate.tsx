@@ -2,10 +2,12 @@ import type { Silhouette } from "@/data/products";
 
 type PlateKind = Silhouette | "room" | "craft" | "workshop" | "portrait" | "detail" | "swatchkit";
 
-const TONES = ["#EFEAE3", "#E8E2D8", "#E3D9C8", "#EDE7DC", "#E6DECF"];
+// Cool-neutral grounds with a cream lean, so an un-photographed slot
+// still sits inside the boutique palette instead of reading as a gap.
+const TONES = ["#F0EEE9", "#E9E6E0", "#E4E0E0", "#EDEAE3", "#DEDBD5"];
 
-const STROKE = "rgba(43,33,23,0.34)";
-const FAINT = "rgba(43,33,23,0.16)";
+const STROKE = "rgba(18,17,17,0.30)";
+const FAINT = "rgba(18,17,17,0.13)";
 
 function Art({ kind }: { kind: PlateKind }) {
   const s = { fill: "none", stroke: STROKE, strokeWidth: 1.2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -226,6 +228,7 @@ export default function Plate({
   toneIndex = 0,
   className = "",
   bare = false,
+  soft = false,
   src,
   alt,
 }: {
@@ -236,6 +239,7 @@ export default function Plate({
   toneIndex?: number;
   className?: string;
   bare?: boolean;
+  soft?: boolean;
   src?: string | null;
   alt?: string;
 }) {
@@ -254,11 +258,33 @@ export default function Plate({
     );
   }
 
+  if (soft) {
+    return (
+      <div
+        className={`grain relative overflow-hidden ${className}`}
+        style={{
+          aspectRatio: ratio,
+          background:
+            "radial-gradient(92% 72% at 22% 16%, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0) 58%), radial-gradient(70% 62% at 82% 80%, rgba(18,17,17,0.18) 0%, rgba(18,17,17,0) 64%), linear-gradient(155deg, #EDEAE3 0%, #DEDBD5 48%, #CDCAC4 100%)",
+        }}
+      />
+    );
+  }
+
   return (
     <div
       className={`grain relative overflow-hidden ${className}`}
       style={{ aspectRatio: ratio, background: tone }}
     >
+      {/* A soft directional wash + vignette so an empty slot reads like a
+          photograph waiting to land, not a flat swatch. */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(88% 72% at 26% 16%, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0) 56%), radial-gradient(72% 62% at 86% 90%, rgba(138,149,117,0.14) 0%, rgba(138,149,117,0) 62%), radial-gradient(122% 90% at 50% 42%, rgba(18,17,17,0) 44%, rgba(18,17,17,0.10) 100%)",
+        }}
+      />
       <svg
         viewBox="0 0 160 96"
         className="absolute left-1/2 top-1/2 w-[62%] -translate-x-1/2 -translate-y-1/2"
@@ -274,15 +300,15 @@ export default function Plate({
           <span className="tick bottom-3 right-3 border-b border-r" />
           {(plate !== undefined || label) && (
             <div className="absolute bottom-4 left-4 z-[2] flex items-center gap-2">
-              <span className="h-1 w-1 rounded-full bg-brass" />
-              <span className="label text-[10px] text-umber">
+              <span className="h-1 w-1 rounded-full bg-sage" />
+              <span className="label text-[9px] text-umber">
                 {plate !== undefined ? `PL. ${String(plate).padStart(2, "0")}` : ""}
                 {plate !== undefined && label ? " — " : ""}
                 {label ?? ""}
               </span>
             </div>
           )}
-          <span className="label absolute right-4 top-4 z-[2] text-[9px] text-umber/60">
+          <span className="label absolute right-4 top-4 z-[2] text-[9px] text-umber/55">
             Photograph forthcoming
           </span>
         </>

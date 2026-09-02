@@ -23,7 +23,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       </Reveal>
       <Reveal delay={120}>
         <div className="my-12">
-          <Plate kind="detail" ratio="16/8" toneIndex={2} bare src={img[`journal-${article.slug}`]} alt={article.title} />
+          <Plate kind="detail" ratio="3/2" toneIndex={2} bare src={img[`journal-${article.slug}`]} alt={article.title} />
         </div>
       </Reveal>
       <div className="space-y-7 leading-[1.85] text-espresso/85">

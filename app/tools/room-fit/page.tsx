@@ -106,7 +106,7 @@ export default function RoomFit() {
               })}
             </div>
           </div>
-          <div className="border hairline bg-bone/50 p-6">
+          <div className="panel p-6">
             <p className="label text-[10px] text-umber">Floor coverage</p>
             <p className="serif-display mt-1 text-5xl">{density}%</p>
             <p className="mt-2 text-xs text-umber">
@@ -130,7 +130,7 @@ export default function RoomFit() {
               width: floorPxW,
               height: floorPxH,
               backgroundImage:
-                "repeating-linear-gradient(0deg, rgba(43,33,23,0.05) 0 1px, transparent 1px 100%), repeating-linear-gradient(90deg, rgba(43,33,23,0.05) 0 1px, transparent 1px 100%)",
+                "repeating-linear-gradient(0deg, rgba(18,17,17,0.05) 0 1px, transparent 1px 100%), repeating-linear-gradient(90deg, rgba(18,17,17,0.05) 0 1px, transparent 1px 100%)",
               backgroundSize: `${50 * scale}px ${50 * scale}px`,
             }}
           >

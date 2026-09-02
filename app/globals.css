@@ -1,41 +1,70 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────
+   Oaklen — "Boutique" theme
+   Cool near-white grounds, warm-cream tint bands, near-black ink
+   and a sage-olive accent. Token NAMES are kept from the first
+   build so every page re-themes at once; only the values moved.
+   ───────────────────────────────────────────────────────────── */
+
 @theme {
-  --color-ivory: #f7f4ef;
-  --color-bone: #efeae3;
-  --color-linen: #e8e2d8;
-  --color-sand: #e3d9c8;
-  --color-parchment: #ede7dc;
-  --color-espresso: #2b2117;
-  --color-umber: #6b5e4e;
-  --color-brass: #a8823f;
-  --color-clay: #cbb99b;
-  --color-walnut: #8a6f4d;
+  /* grounds */
+  --color-ivory: #fbfaf8;      /* page ground — near-white, a hair warm */
+  --color-bone: #f4f1eb;       /* soft cream band */
+  --color-linen: #edeae3;      /* deeper cream band */
+  --color-sand: #e4e0e0;       /* neutral grey tint */
+  --color-parchment: #f0eee9;  /* mid tint */
+
+  /* ink */
+  --color-espresso: #121111;   /* headings, dark bands */
+  --color-umber: #4e494a;      /* muted body copy */
+
+  /* accents */
+  --color-brass: #6a7653;      /* accent TEXT — deep sage (AA on light) */
+  --color-sage: #8a9575;       /* accent FILL — rules, dots, hovers */
+  --color-clay: #b9c1a6;       /* accent on dark bands */
+  --color-walnut: #5f6b4e;     /* italic emphasis */
+  --color-moss: #ecefe4;       /* soft sage ground */
+  --color-mist: #e4e0e0;       /* hairlines */
+  --color-slate: #71727d;      /* tertiary grey */
 }
 
 @theme inline {
-  --font-serif: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-instrument), "Helvetica Neue", sans-serif;
+  /* `font-serif` is kept as the *display* face so existing markup
+     keeps working — it is now a light grotesque, not a serif. */
+  --font-serif: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-mulish), "Helvetica Neue", Arial, sans-serif;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+/* Neither reference paints a flat white body — holzer.in leaves it
+   transparent over cover imagery, and its footer is a radial gradient. The
+   ground here is a fixed tonal mesh, so no page ever reads as a flat panel. */
 body {
-  background: var(--color-ivory);
+  background-color: var(--color-ivory);
+  background-image:
+    radial-gradient(58% 44% at 10% 6%, rgba(138, 149, 117, 0.11) 0%, rgba(138, 149, 117, 0) 62%),
+    radial-gradient(48% 40% at 90% 18%, rgba(18, 17, 17, 0.06) 0%, rgba(18, 17, 17, 0) 60%),
+    radial-gradient(72% 52% at 46% 106%, rgba(138, 149, 117, 0.10) 0%, rgba(138, 149, 117, 0) 66%),
+    linear-gradient(168deg, #fdfcfa 0%, #f6f3ee 48%, #efebe3 100%);
+  background-attachment: fixed;
   color: var(--color-espresso);
-  font-family: var(--font-instrument), "Helvetica Neue", sans-serif;
+  font-family: var(--font-mulish), "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   font-size: 15px;
+  line-height: 1.7;
 }
 
 ::selection {
-  background: var(--color-brass);
-  color: var(--color-ivory);
+  background: var(--color-sage);
+  color: #fff;
 }
 
-/* fine paper grain over off-white surfaces */
+/* Very fine neutral tooth. Far lighter than the old paper grain —
+   these references are photographic and clean. */
 .grain {
   position: relative;
 }
@@ -44,68 +73,272 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.35;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.17 0 0 0 0 0.13 0 0 0 0 0.09 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.07 0 0 0 0 0.07 0 0 0 0 0.07 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   z-index: 1;
 }
 
+
+/* ── Ambient section grounds ───────────────────────────────────
+   Every band is a photograph, a blurred photograph, or a tonal field —
+   never a flat colour. Drop <Ambience /> in as the first child of a
+   `relative` section and put the content in a `relative z-[1]` wrapper. */
+
+.amb {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.amb-field {
+  position: absolute;
+  inset: 0;
+}
+.amb-cream .amb-field {
+  background:
+    radial-gradient(64% 54% at 14% 8%, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0) 60%),
+    radial-gradient(54% 46% at 88% 14%, rgba(138, 149, 117, 0.14) 0%, rgba(138, 149, 117, 0) 62%),
+    radial-gradient(68% 56% at 58% 106%, rgba(18, 17, 17, 0.07) 0%, rgba(18, 17, 17, 0) 64%),
+    linear-gradient(162deg, #f8f5ef 0%, #f2ede5 52%, #eae4da 100%);
+}
+
+.amb-mist .amb-field {
+  background:
+    radial-gradient(58% 50% at 82% 6%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(50% 44% at 8% 34%, rgba(18, 17, 17, 0.055) 0%, rgba(18, 17, 17, 0) 62%),
+    radial-gradient(64% 48% at 44% 102%, rgba(138, 149, 117, 0.09) 0%, rgba(138, 149, 117, 0) 64%),
+    linear-gradient(196deg, #fbfaf7 0%, #f4f2ed 58%, #eceae4 100%);
+}
+
+.amb-sage .amb-field {
+  background:
+    radial-gradient(60% 52% at 18% 12%, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(56% 48% at 84% 78%, rgba(138, 149, 117, 0.24) 0%, rgba(138, 149, 117, 0) 64%),
+    radial-gradient(48% 40% at 52% 4%, rgba(106, 118, 83, 0.10) 0%, rgba(106, 118, 83, 0) 60%),
+    linear-gradient(172deg, #f3f5ec 0%, #ecefe4 54%, #e4e9da 100%);
+}
+
+.amb-shadow .amb-field {
+  background:
+    radial-gradient(66% 56% at 24% 10%, rgba(78, 73, 74, 0.34) 0%, rgba(78, 73, 74, 0) 62%),
+    radial-gradient(58% 48% at 82% 88%, rgba(138, 149, 117, 0.20) 0%, rgba(138, 149, 117, 0) 64%),
+    radial-gradient(circle at 50% 40%, #26241f 0%, #16150f 58%, #0d0c09 100%);
+}
+
+/* holzer.in's own trick — a fixed ground drifts against the scroll. This must
+   sit AFTER the variant rules above: their `background:` shorthand resets
+   background-attachment, so an earlier declaration would be overwritten.
+   Desktop only; fixed attachment is expensive on touch devices. */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .amb-fixed .amb-field {
+    background-attachment: fixed;
+  }
+}
+
+/* A real photograph, thrown far out of focus so it reads as atmosphere
+   behind type rather than competing with it. */
+.amb-photo {
+  position: absolute;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
+  filter: blur(44px) saturate(0.8);
+  transform: scale(1.06);
+}
+.amb-tint {
+  position: absolute;
+  inset: 0;
+}
+.amb-cream .amb-tint {
+  background: linear-gradient(162deg, rgba(248, 245, 239, 0.86) 0%, rgba(242, 237, 229, 0.9) 100%);
+}
+.amb-mist .amb-tint {
+  background: linear-gradient(196deg, rgba(251, 250, 247, 0.88) 0%, rgba(236, 234, 228, 0.9) 100%);
+}
+.amb-sage .amb-tint {
+  background: linear-gradient(172deg, rgba(243, 245, 236, 0.84) 0%, rgba(228, 233, 218, 0.9) 100%);
+}
+.amb-shadow .amb-tint {
+  background: linear-gradient(180deg, rgba(13, 12, 9, 0.82) 0%, rgba(13, 12, 9, 0.74) 50%, rgba(13, 12, 9, 0.88) 100%);
+}
+
+/* soft inner edges so bands melt into each other instead of butting up */
+.amb-feather {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(251, 250, 248, 0.55) 0%, rgba(251, 250, 248, 0) 12%),
+    linear-gradient(to top, rgba(251, 250, 248, 0.55) 0%, rgba(251, 250, 248, 0) 12%);
+}
+.amb-shadow .amb-feather {
+  background: none;
+}
+
+/* frosted panel for content sitting on a busy ground */
+.panel {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 26px 60px -34px rgba(18, 17, 17, 0.28);
+}
+.panel-dark {
+  background: rgba(18, 17, 17, 0.3);
+  backdrop-filter: blur(16px) saturate(1.05);
+  -webkit-backdrop-filter: blur(16px) saturate(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* ── Type ──────────────────────────────────────────────────── */
+
 .label {
-  font-family: var(--font-instrument), "Helvetica Neue", sans-serif;
+  font-family: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
   font-size: 11px;
-  letter-spacing: 0.22em;
+  font-weight: 500;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
+  line-height: 1.5;
+}
+
+/* The display face: Montserrat Light, pulled tight. This is the
+   single biggest carrier of the new vibe. */
+.serif-display {
+  font-family: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+}
+.serif-display em,
+.serif-display i {
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* Uppercase section title, holzer.in's signature heading treatment */
+.section-title {
+  font-family: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
 }
 
 .hairline {
-  border-color: rgba(43, 33, 23, 0.14);
+  border-color: var(--color-mist);
 }
 
-.serif-display {
-  font-family: var(--font-fraunces), Georgia, serif;
-  font-weight: 340;
-  letter-spacing: -0.015em;
-  line-height: 1.04;
-  font-variation-settings: "opsz" 144;
+/* Hero trust strip. Same treatment as .label but it has to survive a 375px
+   viewport, where 0.24em tracking on this much copy overflows and clips. */
+.trust {
+  font-family: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1.6;
 }
+@media (max-width: 520px) {
+  .trust {
+    font-size: 8px;
+    letter-spacing: 0.09em;
+  }
+}
+
+/* a short sage rule that precedes a kicker */
+.rule::before {
+  content: "";
+  display: inline-block;
+  width: 34px;
+  height: 1px;
+  margin-right: 14px;
+  vertical-align: middle;
+  background: var(--color-sage);
+}
+
+/* ── Buttons ───────────────────────────────────────────────── */
 
 .btn-line {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-size: 12px;
-  letter-spacing: 0.16em;
+  font-family: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  padding: 15px 30px;
-  border: 1px solid var(--color-espresso);
+  padding: 16px 34px;
+  border: 1px solid rgba(18, 17, 17, 0.35);
   color: var(--color-espresso);
-  transition: background 0.45s cubic-bezier(0.23, 1, 0.32, 1), color 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: background 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    color 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   background: transparent;
   cursor: pointer;
 }
 .btn-line:hover {
   background: var(--color-espresso);
-  color: var(--color-ivory);
+  border-color: var(--color-espresso);
+  color: #fff;
 }
+
+.btn-sage {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 17px 34px;
+  border: 1px solid var(--color-sage);
+  background: var(--color-sage);
+  color: #fff;
+  transition: background 0.5s, border-color 0.5s;
+  cursor: pointer;
+}
+.btn-sage:hover {
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+}
+
+/* on photography / dark bands */
+.btn-line-light {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+.btn-line-light:hover {
+  background: #fff;
+  border-color: #fff;
+  color: var(--color-espresso);
+}
+
 .btn-solid {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-size: 12px;
-  letter-spacing: 0.16em;
+  font-family: var(--font-montserrat), "Helvetica Neue", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  padding: 16px 30px;
+  padding: 17px 34px;
   border: 1px solid var(--color-espresso);
   background: var(--color-espresso);
-  color: var(--color-ivory);
-  transition: background 0.45s, border-color 0.45s;
+  color: #fff;
+  transition: background 0.5s, border-color 0.5s, color 0.5s;
   cursor: pointer;
 }
 .btn-solid:hover {
-  background: var(--color-walnut);
-  border-color: var(--color-walnut);
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+  color: #fff;
 }
 
-/* reveal on scroll */
+/* ── Motion ────────────────────────────────────────────────── */
+
 .reveal {
   opacity: 0;
   transform: translateY(28px);
@@ -126,34 +359,32 @@ body {
   transform: scale(1);
 }
 
-/* ---- Plane Reveal hero ---- */
-/* Rested state is ALREADY revealed (timber slid off to the right), so the hero
-   is correct even if the animation never runs. On load, HomeHero.tsx drives the
-   timber from covering -> off via the Web Animations API (a plane pushing the
-   shaving away), revealing the finished piece beneath. */
-.plane-raw {
-  transform: translateX(101%);
-  will-change: transform;
-  background:
-    repeating-linear-gradient(96deg, rgba(74,54,38,0) 0 6px, rgba(74,54,38,0.16) 7px, rgba(74,54,38,0.02) 9px 18px),
-    repeating-linear-gradient(94deg, rgba(43,33,23,0.05) 0 22px, rgba(120,90,60,0.10) 23px 46px),
-    linear-gradient(100deg, #7a5c43, #9a7a56 40%, #6f5238);
+/* Hero headline cross-fade (holzer.in rotates three lines) */
+.hero-line {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 1.1s cubic-bezier(0.23, 1, 0.32, 1), transform 1.1s cubic-bezier(0.23, 1, 0.32, 1);
 }
-/* the plane's blade edge, pinned to the trailing (right) side of the timber */
-.plane-blade {
-  top: 0;
-  bottom: 0;
-  right: -3px;
-  width: 3px;
-  background: linear-gradient(var(--color-ivory), rgba(247, 244, 239, 0.35));
-  box-shadow: 0 0 30px 12px rgba(247, 244, 239, 0.75);
+.hero-line[data-active="true"] {
+  opacity: 1;
+  transform: none;
 }
+
+/* photo tile — kasa's category band */
+.tile-img {
+  transition: transform 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.group:hover .tile-img {
+  transform: scale(1.06);
+}
+
+/* ── Forms ─────────────────────────────────────────────────── */
 
 input, select, textarea {
   background: transparent;
   border: 0;
-  border-bottom: 1px solid rgba(43, 33, 23, 0.3);
-  padding: 10px 2px;
+  border-bottom: 1px solid rgba(18, 17, 17, 0.24);
+  padding: 11px 2px;
   font-size: 14px;
   color: var(--color-espresso);
   outline: none;
@@ -162,10 +393,10 @@ input, select, textarea {
   transition: border-color 0.3s;
 }
 input:focus, select:focus, textarea:focus {
-  border-bottom-color: var(--color-brass);
+  border-bottom-color: var(--color-sage);
 }
 input::placeholder, textarea::placeholder {
-  color: rgba(107, 94, 78, 0.55);
+  color: rgba(78, 73, 74, 0.5);
 }
 
 input[type="range"] {
@@ -173,7 +404,7 @@ input[type="range"] {
   appearance: none;
   border: 0;
   height: 1px;
-  background: rgba(43, 33, 23, 0.25);
+  background: rgba(18, 17, 17, 0.2);
   padding: 0;
 }
 input[type="range"]::-webkit-slider-thumb {
@@ -194,18 +425,19 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--color-ivory);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-clay);
+  background: var(--color-sand);
   border: 3px solid var(--color-ivory);
   border-radius: 6px;
 }
 
-/* custom cursor */
+/* ── Cursor ────────────────────────────────────────────────── */
+
 #cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--color-espresso);
   pointer-events: none;
@@ -219,14 +451,14 @@ input[type="range"]::-webkit-slider-thumb {
 #cursor span {
   opacity: 0;
   font-size: 0;
-  color: var(--color-ivory);
-  letter-spacing: 0.14em;
+  color: #fff;
+  letter-spacing: 0.18em;
   transition: opacity 0.25s, font-size 0.25s;
 }
 #cursor.is-view {
   width: 72px;
   height: 72px;
-  background: rgba(43, 33, 23, 0.92);
+  background: rgba(106, 118, 83, 0.94);
 }
 #cursor.is-view span {
   opacity: 1;
@@ -238,12 +470,12 @@ input[type="range"]::-webkit-slider-thumb {
 
 .outline-word {
   color: transparent;
-  -webkit-text-stroke: 1px rgba(43, 33, 23, 0.28);
+  -webkit-text-stroke: 1px rgba(18, 17, 17, 0.24);
 }
 
 .tick {
   position: absolute;
   width: 14px;
   height: 14px;
-  border-color: rgba(43, 33, 23, 0.3);
+  border-color: rgba(18, 17, 17, 0.22);
 }

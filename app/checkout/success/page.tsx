@@ -26,7 +26,7 @@ export default async function Success({ searchParams }: { searchParams: Promise<
         nothing to pay online. {order.customer.email ? `A copy is on its way to ${order.customer.email}.` : ""}
       </p>
 
-      <div className="mt-12 border hairline bg-bone/60 p-8">
+      <div className="mt-12 panel p-8">
         <div className="space-y-3 text-sm">
           {order.items.map((it) => (
             <div key={it.slug} className="flex justify-between">

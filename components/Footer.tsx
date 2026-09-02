@@ -1,11 +1,13 @@
 import Link from "next/link";
 import NewsletterForm from "./NewsletterForm";
+import Ambience from "./Ambience";
 import { BRAND } from "@/data/brand";
 
 export default function Footer() {
   return (
-    <footer className="border-t hairline bg-ivory">
-      <div className="mx-auto max-w-[1500px] px-6 pt-20 lg:px-12">
+    <footer className="relative">
+      <Ambience variant="cream" feather={false} />
+      <div className="relative z-[1] mx-auto max-w-[1500px] px-6 pt-20 lg:px-12">
         <div className="grid gap-14 pb-20 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <p className="label mb-4 text-brass">The Ledger</p>
@@ -56,12 +58,12 @@ export default function Footer() {
           <Link href="/policies/refunds" className="label text-[10px] text-umber hover:text-brass">Returns &amp; refunds</Link>
         </div>
       </div>
-      <div className="overflow-hidden px-2">
+      <div className="relative z-[1] overflow-hidden px-2">
         <p className="serif-display select-none whitespace-nowrap text-center text-[19vw] leading-[0.78] text-espresso/[0.06]">
           OAKLEN
         </p>
       </div>
-      <div className="border-t hairline">
+      <div className="relative z-[1] border-t hairline">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-3 px-6 py-5 lg:px-12">
           <p className="label text-[10px] text-umber">© 2026 Oaklen Furniture · Made to be kept</p>
           <p className="label text-[10px] text-umber">Solid wood · 8-year warranty · Pan-India delivery</p>

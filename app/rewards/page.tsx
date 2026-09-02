@@ -1,5 +1,6 @@
 import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
+import Ambience from "@/components/Ambience";
 import { getSiteImages } from "@/lib/store";
 import RewardForm from "./RewardForm";
 
@@ -45,8 +46,9 @@ export default async function RewardsPage() {
         </div>
       </section>
 
-      <section className="border-y hairline bg-bone/50">
-        <div className="mx-auto grid max-w-[1500px] gap-14 px-6 py-24 lg:grid-cols-2 lg:items-center lg:px-12">
+      <section className="relative">
+        <Ambience variant="sage" />
+        <div className="relative z-[1] mx-auto grid max-w-[1500px] gap-14 px-6 py-24 lg:grid-cols-2 lg:items-center lg:px-12">
           <div>
             <Reveal>
               <p className="label mb-4 text-brass">Join</p>

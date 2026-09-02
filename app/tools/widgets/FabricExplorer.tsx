@@ -12,7 +12,7 @@ export default function FabricExplorer() {
   const shown = family ? FABRICS.filter((f) => f.family === family) : FABRICS;
 
   return (
-    <div className="border hairline bg-bone/50 p-7">
+    <div className="panel p-7">
       <div className="grain relative mb-6 h-36 overflow-hidden" style={{ background: active.tone }}>
         <p className="label absolute bottom-3 left-3 z-[2] text-[9px] text-espresso/60">
           {active.name} · {active.family}

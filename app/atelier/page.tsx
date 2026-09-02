@@ -1,5 +1,6 @@
 import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
+import Ambience from "@/components/Ambience";
 import Link from "next/link";
 import { getSiteImages } from "@/lib/store";
 import { addressLine } from "@/data/brand";
@@ -71,8 +72,9 @@ export default async function AtelierPage() {
         </div>
       </section>
 
-      <section className="grain bg-espresso text-ivory">
-        <div className="mx-auto max-w-[1500px] px-6 py-24 text-center lg:px-12">
+      <section className="relative text-ivory">
+        <Ambience variant="shadow" src={img["atelier-hero"]} feather={false} />
+        <div className="relative z-[1] mx-auto max-w-[1500px] px-6 py-24 text-center lg:px-12">
           <Reveal>
             <p className="serif-display mx-auto max-w-3xl text-4xl leading-tight lg:text-6xl">
               “We don&apos;t sell furniture. We take <span className="italic text-clay">commissions.</span>”

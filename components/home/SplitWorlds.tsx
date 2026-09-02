@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useState } from "react";
 import Plate from "../Plate";
 
+// Two full-height photographic panes that widen on hover. Copy now sits in
+// white over a scrim rather than in brown over the plate, so the panes read
+// correctly once real photography is dropped in.
 export default function SplitWorlds({ modernImage, classicImage }: { modernImage?: string; classicImage?: string }) {
   const [side, setSide] = useState<"modern" | "classic" | null>(null);
 
@@ -13,29 +16,38 @@ export default function SplitWorlds({ modernImage, classicImage }: { modernImage
     return (
       <Link
         href={`/shop?style=${which}`}
+        data-cursor="view"
         onMouseEnter={() => setSide(which)}
         onMouseLeave={() => setSide(null)}
-        className="relative block overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
-        style={{ flexGrow: isActive ? 1.6 : 1, opacity: isMuted ? 0.55 : 1 }}
+        className="group relative block overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
+        style={{ flexGrow: isActive ? 1.6 : 1, opacity: isMuted ? 0.7 : 1 }}
       >
         <Plate
           kind={which === "modern" ? "sofa-curved" : "sofa-chester"}
           ratio="auto"
-          toneIndex={which === "modern" ? 2 : 4}
+          toneIndex={which === "modern" ? 1 : 4}
           bare
-          className="h-full min-h-[380px] lg:min-h-[560px]"
+          soft
+          className="tile-img h-full min-h-[420px] lg:min-h-[600px]"
           src={which === "modern" ? modernImage : classicImage}
           alt={which === "modern" ? "Modern furniture" : "Classic furniture"}
         />
-        <div className="absolute inset-0 z-[2] flex flex-col items-start justify-end p-8 lg:p-14">
-          <p className="label mb-3 text-brass">{which === "modern" ? "The quiet line" : "The long memory"}</p>
-          <p className="serif-display text-5xl capitalize lg:text-7xl">{which}</p>
-          <p className="mt-4 max-w-xs text-sm text-umber">
+        <div
+          className="pointer-events-none absolute inset-0 z-[2]"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(10,10,10,0.80) 0%, rgba(10,10,10,0.34) 48%, rgba(10,10,10,0.10) 100%)",
+          }}
+        />
+        <div className="absolute inset-0 z-[3] flex flex-col items-start justify-end p-8 lg:p-14">
+          <p className="label mb-4 text-clay">{which === "modern" ? "The quiet line" : "The long memory"}</p>
+          <p className="section-title text-4xl text-white lg:text-6xl">{which}</p>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/75">
             {which === "modern"
               ? "Low profiles, soft geometry, nothing that shouts."
               : "Turned wood, hand-set buttons, silhouettes with a lineage."}
           </p>
-          <span className="label mt-6 border-b border-espresso/40 pb-1 transition-colors group-hover:border-brass">
+          <span className="label mt-7 border-b border-white/45 pb-1 text-[10px] text-white transition-colors group-hover:border-clay group-hover:text-clay">
             Enter →
           </span>
         </div>

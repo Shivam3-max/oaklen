@@ -28,7 +28,7 @@ export default function DeliveryEstimator({ products: PRODUCTS }: { products: Pr
   };
 
   return (
-    <div className="border hairline bg-bone/50 p-7">
+    <div className="panel p-7">
       <p className="label mb-3 text-[10px] text-umber">The piece</p>
       <select value={slug} onChange={(e) => setSlug(e.target.value)} className="mb-6">
         {PRODUCTS.map((p) => (

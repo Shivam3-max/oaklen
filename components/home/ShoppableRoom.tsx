@@ -36,7 +36,7 @@ export default function ShoppableRoom({ products, image }: { products: Product[]
             {isOpen && (
               <Link
                 href={`/product/${p.slug}`}
-                className="absolute left-4 top-4 z-[4] block w-52 border hairline bg-ivory p-4 shadow-[0_24px_48px_rgba(43,33,23,0.16)]"
+                className="absolute left-4 top-4 z-[4] block w-52 border hairline bg-ivory p-4 shadow-[0_24px_48px_rgba(18,17,17,0.14)]"
               >
                 <p className="font-serif text-lg leading-tight">{p.name}</p>
                 <p className="mt-0.5 text-xs text-umber">{p.line}</p>

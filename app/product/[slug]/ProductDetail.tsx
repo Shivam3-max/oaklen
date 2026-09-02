@@ -118,7 +118,7 @@ export default function ProductDetail({ product }: { product: Product }) {
         </div>
 
         {/* book */}
-        <div className="mt-10 border hairline bg-bone/60 p-6">
+        <div className="mt-10 panel p-6">
           <p className="label text-umber">Book this piece</p>
           <p className="mt-2 text-xs leading-relaxed text-umber">
             Reserve it with your contact details — no payment online. Our team calls you to confirm and arrange delivery.

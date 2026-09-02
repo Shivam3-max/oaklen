@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Instrument_Sans } from "next/font/google";
+import { Montserrat, Mulish } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/CartContext";
 import Nav from "@/components/Nav";
@@ -9,15 +9,22 @@ import CookieConsent from "@/components/CookieConsent";
 import Analytics from "@/components/Analytics";
 import { BRAND } from "@/data/brand";
 
-const fraunces = Fraunces({
+// Display face — Montserrat Light, tracked tight. Body — Mulish.
+// This pairing is the one holzer.in uses and it carries most of the
+// boutique feel; the old Fraunces/Instrument pair read much warmer.
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-fraunces",
-  axes: ["opsz", "SOFT", "WONK"],
+  variable: "--font-montserrat",
+  weight: ["200", "300", "400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
-const instrument = Instrument_Sans({
+const mulish = Mulish({
   subsets: ["latin"],
-  variable: "--font-instrument",
+  variable: "--font-mulish",
+  weight: ["300", "400", "500", "600"],
+  display: "swap",
 });
 
 const description =
@@ -59,7 +66,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${fraunces.variable} ${instrument.variable}`}>
+      <body className={`${montserrat.variable} ${mulish.variable}`}>
         <Analytics />
         <CartProvider>
           <Atmosphere />

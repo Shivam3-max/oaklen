@@ -125,7 +125,7 @@ export default function Configurator() {
             </div>
           </section>
 
-          <div className="border hairline bg-bone/60 p-7">
+          <div className="panel p-7">
             <div className="flex items-baseline justify-between">
               <p className="label text-umber">Your build</p>
               <p className="serif-display text-4xl">{formatINR(price)}</p>

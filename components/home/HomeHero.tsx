@@ -1,71 +1,122 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import Plate from "@/components/Plate";
 
-// The Plane Reveal hero: on load a carpenter's plane pushes a panel of raw
-// timber off to the right, revealing the finished piece and the headline
-// beneath. The rested state is already revealed (see globals.css), so if
-// animation is unsupported or reduced-motion is on, the hero is simply correct
-// and static. Uses the uploaded home-hero photo when present, else the plate.
+// Full-bleed photographic hero, in the manner of the reference boutiques:
+// one interior photograph edge to edge, a dark scrim, and a light display
+// line centred over it that rotates between three statements. When no photo
+// has been uploaded the designed plate stands in underneath the same scrim,
+// so the composition is identical the day a real photograph lands.
+const LINES = [
+  <>
+    Furniture that <em>outlives</em> trends
+  </>,
+  <>
+    Timeless <em>silhouettes</em>, built by hand
+  </>,
+  <>
+    Solid wood, <em>quietly</em> considered
+  </>,
+];
+
 export default function HomeHero({ heroSrc }: { heroSrc?: string }) {
-  const rawRef = useRef<HTMLDivElement>(null);
+  const [i, setI] = useState(0);
 
   useEffect(() => {
-    const el = rawRef.current;
-    if (!el || typeof el.animate !== "function") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    el.animate(
-      [{ transform: "translateX(0)" }, { transform: "translateX(101%)" }],
-      { duration: 2000, delay: 200, easing: "cubic-bezier(0.76, 0, 0.24, 1)", fill: "backwards" }
-    );
+    const id = setInterval(() => setI((n) => (n + 1) % LINES.length), 5200);
+    return () => clearInterval(id);
   }, []);
 
   return (
-    <section className="relative flex min-h-svh flex-col justify-end overflow-hidden">
-      {/* finished state — revealed as the plane passes */}
+    <section id="site-hero" className="relative flex min-h-svh flex-col justify-between overflow-hidden">
+      {/* photograph */}
       <div className="absolute inset-0 z-[1]">
-        <Plate kind="sofa" ratio="auto" bare toneIndex={2} src={heroSrc} alt="Oaklen furniture" className="h-full w-full" />
-        {/* scrims keep the headline legible over a photo or the plate */}
+        <Plate
+          kind="room"
+          ratio="auto"
+          bare
+          soft
+          toneIndex={2}
+          src={heroSrc}
+          alt="An Oaklen interior"
+          className="h-full w-full"
+        />
+        {/* scrim — tuned so white type reads over either a photograph or the plate */}
         <div
           className="pointer-events-none absolute inset-0"
-          style={{ background: "linear-gradient(105deg, rgba(247,244,239,0.94) 0%, rgba(247,244,239,0.68) 34%, rgba(247,244,239,0.12) 62%, rgba(247,244,239,0) 82%)" }}
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2"
-          style={{ background: "linear-gradient(to top, rgba(247,244,239,0.82), rgba(247,244,239,0))" }}
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(10,10,10,0.52) 0%, rgba(10,10,10,0.30) 38%, rgba(10,10,10,0.40) 72%, rgba(10,10,10,0.62) 100%)",
+          }}
         />
       </div>
 
-      {/* content — sits beneath the timber, uncovered by the plane */}
-      <div className="relative z-[2] px-6 pb-14 pt-36 lg:px-12">
-        <div className="max-w-[1500px]">
-          <p className="label mb-6 flex items-center gap-4 text-brass">
-            <span className="inline-block h-px w-12 bg-brass" />
-            An Indian furniture atelier · Panchkula
-          </p>
-          <h1 className="serif-display max-w-5xl text-[13.5vw] leading-[0.96] sm:text-8xl lg:text-[9.5rem]">
-            Furniture that <em className="text-walnut">outlives</em> trends.
-          </h1>
-          <div className="mt-10 flex flex-wrap items-center gap-8">
-            <Link href="/shop" className="btn-solid">Reserve a piece</Link>
-            <Link href="/atelier" className="label border-b border-espresso/40 pb-1 transition-colors hover:border-brass hover:text-brass">
-              Inside the atelier
+      {/* centred statement */}
+      <div className="relative z-[2] flex flex-1 items-center justify-center px-6 pb-16 pt-32 text-center lg:px-12">
+        <div className="w-full max-w-4xl">
+          <p className="label mb-8 text-white/70">Panchkula · Est. 2016</p>
+
+          <div className="grid">
+            {LINES.map((line, n) => (
+              <h1
+                key={n}
+                data-active={n === i}
+                aria-hidden={n !== i}
+                className="hero-line serif-display col-start-1 row-start-1 text-[9vw] text-white sm:text-6xl lg:text-[4.6rem]"
+              >
+                {line}
+              </h1>
+            ))}
+          </div>
+
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
+            <Link href="/shop" className="btn-line-light btn-line">
+              View the collection
+            </Link>
+            <Link href="/atelier" className="btn-line-light btn-line">
+              Our process
             </Link>
           </div>
-          <div className="mt-16 flex flex-wrap gap-x-12 gap-y-3 text-[13px] text-umber">
-            <span>Solid wood only</span>
-            <span>Made to order · 14–45 days</span>
-            <span>8-year structural warranty</span>
-            <span>Delivered &amp; assembled, pan-India</span>
+
+          {/* slide dots */}
+          <div className="mt-14 flex items-center justify-center gap-3">
+            {LINES.map((_, n) => (
+              <button
+                key={n}
+                onClick={() => setI(n)}
+                aria-label={`Statement ${n + 1}`}
+                className={`h-1.5 w-1.5 rounded-full transition-all duration-500 ${
+                  n === i ? "w-6 bg-white" : "bg-white/45 hover:bg-white/75"
+                }`}
+              />
+            ))}
           </div>
         </div>
       </div>
 
-      {/* raw timber, planed away on load; the blade edge rides its trailing side */}
-      <div ref={rawRef} className="plane-raw absolute inset-0 z-[3]" aria-hidden="true">
-        <div className="plane-blade absolute" />
+      {!heroSrc && (
+        <span className="label absolute right-6 top-24 z-[2] text-[9px] text-white/45 lg:right-12">
+          Photograph forthcoming
+        </span>
+      )}
+
+      {/* trust strip along the foot of the photograph */}
+      <div className="relative z-[2] border-t border-white/20">
+        <div className="mx-auto flex max-w-[1500px] flex-wrap justify-center gap-x-10 gap-y-2 px-6 py-5 text-center lg:justify-between lg:px-12">
+          {[
+            "Solid wood only",
+            "Made to order · 14–45 days",
+            "8-year structural warranty",
+            "Delivered & assembled, pan-India",
+          ].map((t) => (
+            <span key={t} className="trust text-white/75">
+              {t}
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   );

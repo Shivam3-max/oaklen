@@ -26,7 +26,7 @@ export default async function JournalPage() {
               className="group grid gap-8 border-t hairline py-12 last:border-b md:grid-cols-[220px_1fr_auto] md:items-center"
             >
               <div className="w-full max-w-[220px]">
-                <Plate kind={i === 0 ? "detail" : i === 1 ? "sofa" : "throw"} ratio="4/3" toneIndex={i + 1} bare src={img[`journal-${a.slug}`]} alt={a.title} />
+                <Plate kind={i === 0 ? "detail" : i === 1 ? "sofa" : "throw"} ratio="3/2" toneIndex={i + 1} bare src={img[`journal-${a.slug}`]} alt={a.title} />
               </div>
               <div>
                 <p className="label mb-3 text-brass">{a.tag} · {a.date}</p>

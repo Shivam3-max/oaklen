@@ -14,40 +14,44 @@ export interface ImageSlot {
 
 export const IMAGE_SLOTS: ImageSlot[] = [
   // Home
-  { key: "home-hero", label: "Homepage hero", section: "Home", w: 1600, h: 2000, note: "Tall portrait shown on the right of the hero." },
-  { key: "home-signature", label: "Signature piece (Aria)", section: "Home", w: 1400, h: 1120, note: "The featured sofa in the ‘Signature’ band." },
-  { key: "home-room", label: "Shoppable room", section: "Home", w: 1600, h: 800, note: "Wide room where the four hotspots sit." },
-  { key: "home-split-modern", label: "Split — Modern", section: "Home", w: 1200, h: 1500 },
-  { key: "home-split-classic", label: "Split — Classic", section: "Home", w: 1200, h: 1500 },
+  { key: "home-hero", label: "Homepage hero", section: "Home", w: 2400, h: 1600, note: "Full-bleed behind the hero statement. Mid-tone — white type sits over it. On phones only the centre ~30% of the width is visible, so keep the subject centred." },
+  { key: "home-signature", label: "Signature piece (Aria)", section: "Home", w: 1200, h: 1500, note: "Portrait, left of the ‘design philosophy’ copy. Also reused blurred as that band’s background." },
+  { key: "home-room", label: "Shoppable room", section: "Home", w: 2000, h: 1000, note: "Wide room where the four shoppable hotspots sit. Leave the pieces clearly separated." },
+  { key: "home-split-modern", label: "Split — Modern", section: "Home", w: 1200, h: 1500, note: "Tall pane. Title and copy sit bottom-left over a dark scrim — keep that corner calm." },
+  { key: "home-split-classic", label: "Split — Classic", section: "Home", w: 1200, h: 1500, note: "Tall pane. Title and copy sit bottom-left over a dark scrim — keep that corner calm." },
+  { key: "home-cat-living", label: "Category — Living", section: "Home", w: 1200, h: 1500, note: "Tile in the category band under the hero." },
+  { key: "home-cat-sleep", label: "Category — Sleep", section: "Home", w: 1200, h: 1500 },
+  { key: "home-cat-dine", label: "Category — Dine", section: "Home", w: 1200, h: 1500 },
+  { key: "home-cat-accents", label: "Category — Accents", section: "Home", w: 1200, h: 1500 },
 
   // Atelier
-  { key: "atelier-hero", label: "Atelier — workshop floor", section: "Atelier", w: 1600, h: 700, note: "Wide banner near the top of the Atelier page." },
-  { key: "atelier-step-1", label: "Atelier — Selection", section: "Atelier", w: 800, h: 600 },
-  { key: "atelier-step-2", label: "Atelier — Seasoning", section: "Atelier", w: 800, h: 600 },
-  { key: "atelier-step-3", label: "Atelier — Drawing", section: "Atelier", w: 800, h: 600 },
-  { key: "atelier-step-4", label: "Atelier — Joinery", section: "Atelier", w: 800, h: 600 },
-  { key: "atelier-step-5", label: "Atelier — Upholstery", section: "Atelier", w: 800, h: 600 },
-  { key: "atelier-step-6", label: "Atelier — Finishing", section: "Atelier", w: 800, h: 600 },
-  { key: "atelier-step-7", label: "Atelier — The rest", section: "Atelier", w: 800, h: 600 },
-  { key: "atelier-step-8", label: "Atelier — Signature", section: "Atelier", w: 800, h: 600 },
+  { key: "atelier-hero", label: "Atelier — workshop floor", section: "Atelier", w: 2000, h: 875, note: "Wide banner on the Atelier page. Also reused blurred behind the dark atelier band on the homepage, so it must read at low contrast." },
+  { key: "atelier-step-1", label: "Atelier — Selection", section: "Atelier", w: 1200, h: 900 },
+  { key: "atelier-step-2", label: "Atelier — Seasoning", section: "Atelier", w: 1200, h: 900 },
+  { key: "atelier-step-3", label: "Atelier — Drawing", section: "Atelier", w: 1200, h: 900 },
+  { key: "atelier-step-4", label: "Atelier — Joinery", section: "Atelier", w: 1200, h: 900 },
+  { key: "atelier-step-5", label: "Atelier — Upholstery", section: "Atelier", w: 1200, h: 900 },
+  { key: "atelier-step-6", label: "Atelier — Finishing", section: "Atelier", w: 1200, h: 900 },
+  { key: "atelier-step-7", label: "Atelier — The rest", section: "Atelier", w: 1200, h: 900 },
+  { key: "atelier-step-8", label: "Atelier — Signature", section: "Atelier", w: 1200, h: 900 },
 
   // Lookbook
-  { key: "lookbook-hero", label: "Lookbook — The Ivory Room", section: "Lookbook", w: 1600, h: 800 },
+  { key: "lookbook-hero", label: "Lookbook — The Ivory Room", section: "Lookbook", w: 2000, h: 1000, note: "Shoppable room with four hotspots." },
   { key: "lookbook-2", label: "Lookbook — A Study in Walnut", section: "Lookbook", w: 1200, h: 900 },
   { key: "lookbook-3", label: "Lookbook — The Long Table", section: "Lookbook", w: 1200, h: 900 },
   { key: "lookbook-4", label: "Lookbook — Sleep, North-Facing", section: "Lookbook", w: 1200, h: 900 },
 
   // Journal
-  { key: "journal-how-to-read-wood-grain", label: "Journal — Reading wood grain", section: "Journal", w: 1200, h: 760 },
-  { key: "journal-the-case-for-slow-furniture", label: "Journal — Slow furniture", section: "Journal", w: 1200, h: 760 },
-  { key: "journal-caring-for-boucle", label: "Journal — Caring for bouclé", section: "Journal", w: 1200, h: 760 },
+  { key: "journal-how-to-read-wood-grain", label: "Journal — Reading wood grain", section: "Journal", w: 1800, h: 1200 },
+  { key: "journal-the-case-for-slow-furniture", label: "Journal — Slow furniture", section: "Journal", w: 1800, h: 1200 },
+  { key: "journal-caring-for-boucle", label: "Journal — Caring for bouclé", section: "Journal", w: 1800, h: 1200 },
 
   // Visit / Rewards
   { key: "visit-showroom", label: "Visit — showroom", section: "Visit", w: 1200, h: 900 },
-  { key: "trade-preview", label: "Rewards — atelier preview", section: "Rewards", w: 1000, h: 1250 },
+  { key: "trade-preview", label: "Rewards — atelier preview", section: "Rewards", w: 1200, h: 1500, note: "Portrait. Atelier or showroom scene beside the rewards form." },
 ];
 
-export const PRODUCT_IMAGE_SIZE = { w: 1400, h: 1120, label: "1400 × 1120 px (5:4), JPG or PNG" };
+export const PRODUCT_IMAGE_SIZE = { w: 1400, h: 1120, label: "1400 × 1120 px (5:4 landscape), JPG or PNG" };
 
 export function slotById(key: string) {
   return IMAGE_SLOTS.find((s) => s.key === key);

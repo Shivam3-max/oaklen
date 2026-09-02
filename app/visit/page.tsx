@@ -77,7 +77,7 @@ export default function VisitPage() {
         </div>
 
         <Reveal delay={120}>
-          <div className="border hairline bg-bone/50 p-10">
+          <div className="panel p-10">
             <p className="label mb-3 text-brass">Design consultation</p>
             <h2 className="serif-display text-4xl">An hour with a designer, on us.</h2>
             <p className="mt-4 text-sm leading-relaxed text-umber">
