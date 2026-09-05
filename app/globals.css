@@ -148,25 +148,25 @@ body {
      near-black, so the photograph has to give up its tonal range and read as
      soft colour and form — brightness opens the shadows, low contrast keeps
      the ground even enough to stay legible. */
-  filter: blur(46px) saturate(0.62) brightness(1.44) contrast(0.68);
+  filter: blur(14px) saturate(0.74) brightness(1.24) contrast(0.86);
   transform: scale(1.06);
 }
 /* The one dark band inverts it: white type, so the photograph goes down. */
 .amb-shadow .amb-photo {
-  filter: blur(46px) saturate(0.72) brightness(0.52) contrast(0.82);
+  filter: blur(14px) saturate(0.8) brightness(0.5) contrast(0.9);
 }
 .amb-tint {
   position: absolute;
   inset: 0;
 }
 .amb-cream .amb-tint {
-  background: linear-gradient(162deg, rgba(248, 245, 239, 0.56) 0%, rgba(242, 237, 229, 0.66) 100%);
+  background: linear-gradient(162deg, rgba(248, 245, 239, 0.58) 0%, rgba(242, 237, 229, 0.66) 100%);
 }
 .amb-mist .amb-tint {
-  background: linear-gradient(196deg, rgba(251, 250, 247, 0.56) 0%, rgba(236, 234, 228, 0.66) 100%);
+  background: linear-gradient(196deg, rgba(251, 250, 247, 0.58) 0%, rgba(236, 234, 228, 0.66) 100%);
 }
 .amb-sage .amb-tint {
-  background: linear-gradient(172deg, rgba(241, 244, 233, 0.54) 0%, rgba(226, 232, 215, 0.66) 100%);
+  background: linear-gradient(172deg, rgba(241, 244, 233, 0.5599999999999999) 0%, rgba(226, 232, 215, 0.66) 100%);
 }
 .amb-shadow .amb-tint {
   background: linear-gradient(180deg, rgba(13, 12, 9, 0.72) 0%, rgba(13, 12, 9, 0.62) 50%, rgba(13, 12, 9, 0.80) 100%);
