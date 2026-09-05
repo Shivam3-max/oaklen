@@ -42,7 +42,7 @@ export default function HomeHero({ heroSrc }: { heroSrc?: string }) {
           toneIndex={2}
           src={heroSrc}
           alt="An Oaklen interior"
-          className="h-full w-full"
+          className="hero-zoom h-full w-full"
         />
         {/* scrim — tuned so white type reads over either a photograph or the plate */}
         <div

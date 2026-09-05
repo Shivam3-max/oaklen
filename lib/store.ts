@@ -1,6 +1,7 @@
 import { prismaStore } from "./prismaStore";
 import { memoryStore } from "./memoryStore";
-import type { StoreImpl } from "./types";
+import { BUNDLED_SITE_PHOTOS, BUNDLED_PRODUCT_PHOTOS } from "@/data/bundledPhotos";
+import type { StoreImpl, StoredProduct } from "./types";
 
 export type { Order, OrderItem, StoredProduct, Enquiry, Subscriber } from "./types";
 
@@ -10,11 +11,29 @@ const impl: StoreImpl = process.env.DATABASE_URL ? prismaStore : memoryStore;
 
 export const databaseConnected = !!process.env.DATABASE_URL;
 
-export const getSiteImages = impl.getSiteImages;
+// Photography bundled in public/photos is the baseline; anything uploaded
+// through the admin overrides the bundled file of the same key.
+export const getSiteImages: StoreImpl["getSiteImages"] = async () => ({
+  ...BUNDLED_SITE_PHOTOS,
+  ...(await impl.getSiteImages()),
+});
 export const setSiteImage = impl.setSiteImage;
 export const clearSiteImage = impl.clearSiteImage;
-export const listProducts = impl.listProducts;
-export const getStoredProduct = impl.getStoredProduct;
+// Same rule for products: a bundled photo fills in only where the product
+// has none of its own, so an admin upload always wins.
+function withBundledPhoto<T extends StoredProduct>(p: T): T {
+  if (p.images?.length) return p;
+  const bundled = BUNDLED_PRODUCT_PHOTOS[p.slug];
+  return bundled ? { ...p, images: [bundled] } : p;
+}
+
+export const listProducts: StoreImpl["listProducts"] = async (includeInactive) =>
+  (await impl.listProducts(includeInactive)).map(withBundledPhoto);
+
+export const getStoredProduct: StoreImpl["getStoredProduct"] = async (slug) => {
+  const p = await impl.getStoredProduct(slug);
+  return p ? withBundledPhoto(p) : null;
+};
 export const createProduct = impl.createProduct;
 export const updateProduct = impl.updateProduct;
 export const deleteProduct = impl.deleteProduct;
