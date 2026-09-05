@@ -144,24 +144,32 @@ body {
   width: 120%;
   height: 120%;
   object-fit: cover;
-  filter: blur(44px) saturate(0.8);
+  /* Lifted and flattened, not just blurred. Body copy sits on these bands in
+     near-black, so the photograph has to give up its tonal range and read as
+     soft colour and form — brightness opens the shadows, low contrast keeps
+     the ground even enough to stay legible. */
+  filter: blur(46px) saturate(0.62) brightness(1.44) contrast(0.68);
   transform: scale(1.06);
+}
+/* The one dark band inverts it: white type, so the photograph goes down. */
+.amb-shadow .amb-photo {
+  filter: blur(46px) saturate(0.72) brightness(0.52) contrast(0.82);
 }
 .amb-tint {
   position: absolute;
   inset: 0;
 }
 .amb-cream .amb-tint {
-  background: linear-gradient(162deg, rgba(248, 245, 239, 0.86) 0%, rgba(242, 237, 229, 0.9) 100%);
+  background: linear-gradient(162deg, rgba(248, 245, 239, 0.56) 0%, rgba(242, 237, 229, 0.66) 100%);
 }
 .amb-mist .amb-tint {
-  background: linear-gradient(196deg, rgba(251, 250, 247, 0.88) 0%, rgba(236, 234, 228, 0.9) 100%);
+  background: linear-gradient(196deg, rgba(251, 250, 247, 0.56) 0%, rgba(236, 234, 228, 0.66) 100%);
 }
 .amb-sage .amb-tint {
-  background: linear-gradient(172deg, rgba(243, 245, 236, 0.84) 0%, rgba(228, 233, 218, 0.9) 100%);
+  background: linear-gradient(172deg, rgba(241, 244, 233, 0.54) 0%, rgba(226, 232, 215, 0.66) 100%);
 }
 .amb-shadow .amb-tint {
-  background: linear-gradient(180deg, rgba(13, 12, 9, 0.82) 0%, rgba(13, 12, 9, 0.74) 50%, rgba(13, 12, 9, 0.88) 100%);
+  background: linear-gradient(180deg, rgba(13, 12, 9, 0.72) 0%, rgba(13, 12, 9, 0.62) 50%, rgba(13, 12, 9, 0.80) 100%);
 }
 
 /* soft inner edges so bands melt into each other instead of butting up */
