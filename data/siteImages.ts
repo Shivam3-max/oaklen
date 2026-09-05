@@ -15,6 +15,7 @@ export interface ImageSlot {
 export const IMAGE_SLOTS: ImageSlot[] = [
   // Home
   { key: "home-hero", label: "Homepage hero", section: "Home", w: 2400, h: 1600, note: "Full-bleed behind the hero statement. Mid-tone — white type sits over it. On phones only the centre ~30% of the width is visible, so keep the subject centred." },
+  { key: "home-hero-2", label: "Homepage hero — second banner", section: "Home", w: 2400, h: 1600, note: "The hero cycles two photographs. Same rules as the first, and it is reused blurred behind the category band." },
   { key: "home-signature", label: "Signature piece (Aria)", section: "Home", w: 1200, h: 1500, note: "Portrait, left of the ‘design philosophy’ copy. Also reused blurred as that band’s background." },
   { key: "home-room", label: "Shoppable room", section: "Home", w: 2000, h: 1000, note: "Wide room where the four shoppable hotspots sit. Leave the pieces clearly separated." },
   { key: "home-split-modern", label: "Split — Modern", section: "Home", w: 1200, h: 1500, note: "Tall pane. Title and copy sit bottom-left over a dark scrim — keep that corner calm." },

@@ -359,32 +359,6 @@ body {
   transform: scale(1);
 }
 
-/* Ken Burns on the hero photograph — holzer.in's own effect, which runs
-   scale(1) -> scale(1.1) translateY(-15px) over 6s ease-out and restarts on
-   every carousel slide. Our hero holds one photograph while the statements
-   rotate, so a one-shot would visibly snap back to scale 1; running it as a
-   slow alternating drift gives the same "always breathing" impression without
-   the jump. */
-@keyframes hero-kenburns {
-  from {
-    transform: scale(1) translateY(0);
-    transform-origin: 50% 18%;
-  }
-  to {
-    transform: scale(1.09) translateY(-14px);
-    transform-origin: 50% 0%;
-  }
-}
-.hero-zoom {
-  animation: hero-kenburns 18s ease-in-out infinite alternate;
-  will-change: transform;
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-zoom {
-    animation: none;
-  }
-}
-
 /* Hero headline cross-fade (holzer.in rotates three lines) */
 .hero-line {
   opacity: 0;

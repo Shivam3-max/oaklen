@@ -25,11 +25,11 @@ export default async function Home() {
   return (
     <>
       {/* 01 — Full-bleed hero */}
-      <HomeHero heroSrc={img["home-hero"]} />
+      <HomeHero heroSrcs={[img["home-hero"], img["home-hero-2"]]} />
 
       {/* 02 — Category band */}
       <section className="relative">
-        <Ambience variant="mist" parallax />
+        <Ambience variant="mist" src={img["home-hero-2"]} />
         <div className="relative z-[1] mx-auto max-w-[1500px] px-6 py-24 lg:px-12 lg:py-32">
           <Reveal>
             <div className="mb-14 max-w-2xl">
@@ -111,7 +111,7 @@ export default async function Home() {
 
       {/* 04 — Two temperaments */}
       <section className="relative">
-        <Ambience variant="sage" parallax />
+        <Ambience variant="sage" src={img["home-split-classic"]} />
         <div className="relative z-[1] mx-auto max-w-[1500px] px-6 py-24 lg:px-12 lg:py-32">
           <Reveal>
             <div className="mb-12 flex flex-wrap items-end justify-between gap-6">

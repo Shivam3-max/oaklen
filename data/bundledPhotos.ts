@@ -9,6 +9,7 @@
 
 export const BUNDLED_SITE_PHOTOS: Record<string, string> = {
   "home-hero": "/photos/home-hero.jpg",
+  "home-hero-2": "/photos/home-hero-2.jpg",
   "home-signature": "/photos/home-signature.jpg",
   "home-room": "/photos/home-room.jpg",
   "home-split-modern": "/photos/home-split-modern.jpg",
