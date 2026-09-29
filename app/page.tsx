@@ -7,7 +7,6 @@ import CategoryIndex from "@/components/home/CategoryIndex";
 import SplitWorlds from "@/components/home/SplitWorlds";
 import ShoppableRoom from "@/components/home/ShoppableRoom";
 import HomeHero from "@/components/home/HomeHero";
-import { formatINR } from "@/data/products";
 import { listProducts, getSiteImages } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -95,8 +94,8 @@ export default async function Home() {
                   21 days
                 </div>
                 <div>
-                  <p className="label mb-2 text-[9px] text-umber">From</p>
-                  {formatINR(signature.price)}
+                  <p className="label mb-2 text-[9px] text-umber">Price</p>
+                  On request
                 </div>
               </div>
             </Reveal>

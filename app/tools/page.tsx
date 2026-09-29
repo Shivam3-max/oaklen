@@ -28,7 +28,7 @@ export default async function ToolsPage() {
               <p className="label text-brass">Tool 01</p>
               <p className="serif-display mt-4 text-4xl">Sofa configurator</p>
               <p className="mt-3 max-w-sm text-sm text-umber">
-                Silhouette, size, fabric, legs — watch the price move as you build your Aria.
+                Silhouette, size, fabric, legs — shape your Aria and send the specification over.
               </p>
               <p className="label mt-8 text-espresso/40 group-hover:text-brass">Open the bench →</p>
             </Link>

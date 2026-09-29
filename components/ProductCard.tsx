@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Plate from "./Plate";
-import { Product, formatINR } from "@/data/products";
+import { Product } from "@/data/products";
 
 export default function ProductCard({ product, toneIndex = 0 }: { product: Product; toneIndex?: number }) {
   return (
@@ -10,15 +10,12 @@ export default function ProductCard({ product, toneIndex = 0 }: { product: Produ
           <Plate kind={product.silhouette} ratio="5/4" label={product.name} plate={product.plate} toneIndex={toneIndex} src={product.images?.[0]} alt={`${product.name} — ${product.line}`} />
         </div>
       </div>
-      <div className="mt-5 flex items-baseline justify-between gap-4">
-        <div>
-          <p className="font-serif text-xl leading-tight">
-            {product.name}
-            <span className="ml-2 text-sm italic text-umber">{product.style}</span>
-          </p>
-          <p className="mt-1 text-[13px] text-umber">{product.line}</p>
-        </div>
-        <p className="whitespace-nowrap text-sm">{formatINR(product.price)}</p>
+      <div className="mt-5">
+        <p className="font-serif text-xl leading-tight">
+          {product.name}
+          <span className="ml-2 text-sm italic text-umber">{product.style}</span>
+        </p>
+        <p className="mt-1 text-[13px] text-umber">{product.line}</p>
       </div>
     </Link>
   );

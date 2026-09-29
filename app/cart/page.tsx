@@ -3,10 +3,10 @@
 import Link from "next/link";
 import Plate from "@/components/Plate";
 import { useCart } from "@/components/CartContext";
-import { fabricById, formatINR } from "@/data/products";
+import { fabricById } from "@/data/products";
 
 export default function CartPage() {
-  const { lines, setQty, remove, subtotal, product } = useCart();
+  const { lines, setQty, remove, product } = useCart();
 
   return (
     <div className="mx-auto max-w-5xl px-6 pb-28 pt-36 lg:px-12">
@@ -36,7 +36,6 @@ export default function CartPage() {
                         <p className="text-xs text-umber">{p.line}</p>
                         {l.fabric && <p className="mt-1 text-xs text-walnut">{fabricById(l.fabric)?.name}</p>}
                       </div>
-                      <p className="text-sm">{formatINR(p.price * l.qty)}</p>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4 border hairline px-3 py-1">
@@ -57,16 +56,16 @@ export default function CartPage() {
           <aside className="h-fit border hairline bg-bone/60 p-8">
             <p className="label mb-6 text-umber">Summary</p>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span>Subtotal</span><span>{formatINR(subtotal)}</span></div>
+              <div className="flex justify-between text-umber"><span>Pieces</span><span>{lines.reduce((n, l) => n + l.qty, 0)}</span></div>
               <div className="flex justify-between text-umber"><span>Delivery &amp; assembly</span><span>On the house</span></div>
               <div className="flex justify-between border-t hairline pt-3 font-serif text-lg">
-                <span>Total</span><span>{formatINR(subtotal)}</span>
+                <span>Price</span><span>On request</span>
               </div>
             </div>
             <Link href="/checkout" className="btn-solid mt-8 w-full justify-center">
               Proceed to book
             </Link>
-            <p className="mt-4 text-center text-[11px] text-umber">No payment online — just your contact details</p>
+            <p className="mt-4 text-center text-[11px] text-umber">No payment online — we call you with a quote</p>
           </aside>
         </div>
       )}

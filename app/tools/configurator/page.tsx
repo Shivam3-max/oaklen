@@ -1,31 +1,29 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Plate from "@/components/Plate";
 import { useCart } from "@/components/CartContext";
-import { FABRICS, formatINR } from "@/data/products";
+import { FABRICS } from "@/data/products";
 
 const SILHOUETTES = [
-  { id: "sofa", label: "Aria — straight", base: 168000, slug: "aria-three-seater" },
-  { id: "sofa-curved", label: "Ondas — curved", base: 214000, slug: "ondas-curved-sofa" },
-  { id: "sofa-chester", label: "Bramble — chesterfield", base: 242000, slug: "bramble-chesterfield" },
-  { id: "sectional", label: "Meridian — L-shape", base: 296000, slug: "meridian-sectional" },
+  { id: "sofa", label: "Aria — straight", note: "The quiet default", slug: "aria-three-seater" },
+  { id: "sofa-curved", label: "Ondas — curved", note: "Soft geometry", slug: "ondas-curved-sofa" },
+  { id: "sofa-chester", label: "Bramble — chesterfield", note: "Hand-set buttons", slug: "bramble-chesterfield" },
+  { id: "sectional", label: "Meridian — L-shape", note: "For a long wall", slug: "meridian-sectional" },
 ] as const;
 
 const SIZES = [
-  { id: "two", label: "Two-seater", mult: 0.82 },
-  { id: "three", label: "Three-seater", mult: 1 },
-  { id: "grand", label: "Grand four", mult: 1.24 },
+  { id: "two", label: "Two-seater" },
+  { id: "three", label: "Three-seater" },
+  { id: "grand", label: "Grand four" },
 ];
 
 const LEGS = [
-  { id: "shadow", label: "Shadow plinth", add: 0 },
-  { id: "oak", label: "Turned oak", add: 6000 },
-  { id: "brass", label: "Burnished brass", add: 14000 },
+  { id: "shadow", label: "Shadow plinth" },
+  { id: "oak", label: "Turned oak" },
+  { id: "brass", label: "Burnished brass" },
 ];
-
-const FABRIC_ADD: Record<string, number> = { Boucle: 12000, Linen: 6000, Velvet: 16000, Leather: 38000, Cotton: 0 };
 
 export default function Configurator() {
   const { add } = useCart();
@@ -34,11 +32,6 @@ export default function Configurator() {
   const [size, setSize] = useState(1);
   const [fabric, setFabric] = useState(FABRICS[0]);
   const [legs, setLegs] = useState(0);
-
-  const price = useMemo(() => {
-    const base = SILHOUETTES[sil].base * SIZES[size].mult + FABRIC_ADD[fabric.family] + LEGS[legs].add;
-    return Math.round(base / 500) * 500;
-  }, [sil, size, fabric, legs]);
 
   return (
     <div className="mx-auto max-w-[1500px] px-6 pb-28 pt-36 lg:px-12">
@@ -73,7 +66,7 @@ export default function Configurator() {
                   className={`border p-4 text-left text-sm transition-all ${i === sil ? "border-brass bg-bone/70" : "hairline hover:border-espresso/40"}`}
                 >
                   {s.label}
-                  <span className="mt-1 block text-xs text-umber">from {formatINR(s.base)}</span>
+                  <span className="mt-1 block text-xs text-umber">{s.note}</span>
                 </button>
               ))}
             </div>
@@ -107,7 +100,7 @@ export default function Configurator() {
                 />
               ))}
             </div>
-            <p className="mt-3 text-xs text-umber">{fabric.family} {FABRIC_ADD[fabric.family] > 0 ? `adds ${formatINR(FABRIC_ADD[fabric.family])}` : "at no extra cost"}</p>
+            <p className="mt-3 text-xs text-umber">{fabric.family}</p>
           </section>
 
           <section>
@@ -119,18 +112,22 @@ export default function Configurator() {
                   onClick={() => setLegs(i)}
                   className={`border px-5 py-3 text-xs tracking-wide transition-all ${i === legs ? "border-brass bg-bone/70" : "hairline hover:border-espresso/40"}`}
                 >
-                  {l.label}{l.add > 0 ? ` +${formatINR(l.add)}` : ""}
+                  {l.label}
                 </button>
               ))}
             </div>
           </section>
 
           <div className="panel p-7">
-            <div className="flex items-baseline justify-between">
-              <p className="label text-umber">Your build</p>
-              <p className="serif-display text-4xl">{formatINR(price)}</p>
-            </div>
-            <p className="mt-2 text-xs text-umber">No payment online — book with your contact details.</p>
+            <p className="label text-umber">Your build</p>
+            <p className="serif-display mt-3 text-3xl leading-tight">{SILHOUETTES[sil].label}</p>
+            <p className="mt-2 text-sm text-umber">
+              {SIZES[size].label} · {fabric.name} · {LEGS[legs].label}
+            </p>
+            <p className="mt-5 text-xs leading-relaxed text-umber">
+              Every build is quoted against its own specification. Send this one over and our team will call you with
+              the price — nothing is paid online.
+            </p>
             <button
               className="btn-solid mt-6 w-full justify-center"
               onClick={() => {
@@ -138,10 +135,10 @@ export default function Configurator() {
                 router.push("/checkout");
               }}
             >
-              Book this build
+              Request a quote
             </button>
             <p className="mt-3 text-center text-[10px] text-umber">
-              Adds the base piece to your booking — our team confirms size &amp; legs before build.
+              Adds the base piece to your enquiry — our team confirms size &amp; legs before build.
             </p>
           </div>
         </div>

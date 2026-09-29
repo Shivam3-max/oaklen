@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { formatINR } from "@/data/products";
 
 interface OrderView {
   id: string;
@@ -81,11 +80,10 @@ export default function AccountPage() {
                   {o.items.map((it) => (
                     <div key={it.slug} className="flex justify-between">
                       <span>{it.name} × {it.qty}{it.fabric ? ` · ${it.fabric}` : ""}</span>
-                      <span>{formatINR(it.price * it.qty)}</span>
                     </div>
                   ))}
                   <div className="flex justify-between border-t hairline pt-3 font-serif">
-                    <span>Total value</span><span>{formatINR(o.subtotal)}</span>
+                    <span>Price</span><span>On request</span>
                   </div>
                 </div>
               </div>

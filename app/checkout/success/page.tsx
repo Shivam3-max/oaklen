@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getOrder } from "@/lib/store";
-import { formatINR } from "@/data/products";
 
 export default async function Success({ searchParams }: { searchParams: Promise<{ order?: string }> }) {
   const { order: id } = await searchParams;
@@ -31,10 +30,9 @@ export default async function Success({ searchParams }: { searchParams: Promise<
           {order.items.map((it) => (
             <div key={it.slug} className="flex justify-between">
               <span>{it.name} — {it.line} × {it.qty}{it.fabric ? ` · ${it.fabric}` : ""}</span>
-              <span>{formatINR(it.price * it.qty)}</span>
             </div>
           ))}
-          <div className="flex justify-between border-t hairline pt-3 font-serif text-lg"><span>Total value</span><span>{formatINR(order.subtotal)}</span></div>
+          <div className="flex justify-between border-t hairline pt-3 font-serif text-lg"><span>Price</span><span>On request</span></div>
         </div>
       </div>
 

@@ -20,9 +20,10 @@ export default function TermsPage() {
 
       <h2 className="serif-display pt-4 text-2xl">Booking</h2>
       <p>
-        You book a piece by giving your contact details on this website — no payment is taken online. Our team will call
-        you to confirm the piece, the price, and delivery. Prices are in Indian Rupees and include applicable taxes
-        unless stated otherwise. We reserve the right to correct any pricing errors before your booking is confirmed.
+        You book a piece by giving your contact details on this website — no payment is taken online, and no prices are
+        published here. Every piece is made to order, so our team will call you to confirm the piece and quote it
+        against your specification. Quotes are in Indian Rupees and include applicable taxes unless stated otherwise.
+        A quote is valid for 30 days and nothing is binding until we confirm your booking.
       </p>
 
       <h2 className="serif-display pt-4 text-2xl">Cancellation</h2>

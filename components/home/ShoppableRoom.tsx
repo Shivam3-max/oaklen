@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Plate from "../Plate";
-import { Product, formatINR } from "@/data/products";
+import { Product } from "@/data/products";
 
 const HOTSPOTS = [
   { slug: "aria-three-seater", x: 32, y: 62 },
@@ -40,8 +40,7 @@ export default function ShoppableRoom({ products, image }: { products: Product[]
               >
                 <p className="font-serif text-lg leading-tight">{p.name}</p>
                 <p className="mt-0.5 text-xs text-umber">{p.line}</p>
-                <p className="mt-2 flex items-center justify-between text-sm">
-                  {formatINR(p.price)}
+                <p className="mt-3 flex items-center justify-end text-sm">
                   <span className="label text-[9px] text-brass">View →</span>
                 </p>
               </Link>

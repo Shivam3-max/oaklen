@@ -40,9 +40,11 @@ function shell(body: string) {
   </div>`;
 }
 
-function itemRows(order: Order) {
+// Customers see no prices anywhere — the team quotes by phone. Staff mail
+// still carries the value, which the server computes from its own price list.
+function itemRows(order: Order, withPrices: boolean) {
   return order.items
-    .map((it) => `<tr><td style="padding:6px 0">${it.name} — ${it.line} × ${it.qty}${it.fabric ? ` · ${it.fabric}` : ""}</td><td style="padding:6px 0;text-align:right">${formatINR(it.price * it.qty)}</td></tr>`)
+    .map((it) => `<tr><td style="padding:6px 0">${it.name} — ${it.line} × ${it.qty}${it.fabric ? ` · ${it.fabric}` : ""}</td>${withPrices ? `<td style="padding:6px 0;text-align:right">${formatINR(it.price * it.qty)}</td>` : ""}</tr>`)
     .join("");
 }
 
@@ -50,10 +52,8 @@ export async function sendOrderConfirmation(order: Order) {
   if (!order.customer.email) return false;
   const body = `
     <p style="font-size:20px;margin:0 0 16px">We’ve got your booking, ${order.customer.name.split(" ")[0]}.</p>
-    <p style="font-size:14px;line-height:1.7;color:#6B5E4E;margin:0 0 20px">Thank you for booking <strong>${order.id}</strong>. Our team will call you shortly to confirm the details and arrange delivery — there’s nothing more to pay online.</p>
-    <table style="width:100%;font-size:14px;border-collapse:collapse">${itemRows(order)}
-      <tr><td style="padding-top:12px;border-top:1px solid rgba(18,17,17,0.13)">Total</td><td style="padding-top:12px;border-top:1px solid rgba(18,17,17,0.13);text-align:right">${formatINR(order.subtotal)}</td></tr>
-    </table>
+    <p style="font-size:14px;line-height:1.7;color:#6B5E4E;margin:0 0 20px">Thank you for booking <strong>${order.id}</strong>. Our team will call you shortly to confirm the details, quote the piece and arrange delivery — there’s nothing to pay online.</p>
+    <table style="width:100%;font-size:14px;border-collapse:collapse">${itemRows(order, false)}</table>
     <p style="font-size:13px;color:#6B5E4E;margin-top:20px">Delivering to: ${order.customer.address}, ${order.customer.pin}</p>`;
   return send(order.customer.email, `Your Oaklen booking ${order.id}`, shell(body));
 }
@@ -61,8 +61,8 @@ export async function sendOrderConfirmation(order: Order) {
 export async function sendStaffOrderAlert(order: Order) {
   const body = `
     <p style="font-size:18px;margin:0 0 12px">New booking — ${order.id}</p>
-    <table style="width:100%;font-size:14px;border-collapse:collapse">${itemRows(order)}
-      <tr><td style="padding-top:12px;border-top:1px solid rgba(18,17,17,0.13)">Total</td><td style="padding-top:12px;border-top:1px solid rgba(18,17,17,0.13);text-align:right">${formatINR(order.subtotal)}</td></tr>
+    <table style="width:100%;font-size:14px;border-collapse:collapse">${itemRows(order, true)}
+      <tr><td style="padding-top:12px;border-top:1px solid rgba(18,17,17,0.13)">Value</td><td style="padding-top:12px;border-top:1px solid rgba(18,17,17,0.13);text-align:right">${formatINR(order.subtotal)}</td></tr>
     </table>
     <p style="font-size:13px;color:#6B5E4E;margin-top:16px">${order.customer.name} · ${order.customer.phone} · ${order.customer.email || "no email"}<br/>${order.customer.address}, ${order.customer.pin}${order.note ? `<br/>Note: ${order.note}` : ""}</p>`;
   return send(STAFF, `New Oaklen booking ${order.id} — ${formatINR(order.subtotal)}`, shell(body));

@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
-import { fabricById, formatINR } from "@/data/products";
+import { fabricById } from "@/data/products";
 
 export default function CheckoutPage() {
-  const { lines, subtotal, clear, product } = useCart();
+  const { lines, clear, product } = useCart();
   const router = useRouter();
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", pin: "", note: "" });
   const [busy, setBusy] = useState(false);
@@ -91,12 +91,11 @@ export default function CheckoutPage() {
                     {p.name} × {l.qty}
                     {l.fabric && <span className="block text-xs text-umber">{fabricById(l.fabric)?.name}</span>}
                   </span>
-                  <span>{formatINR(p.price * l.qty)}</span>
                 </div>
               );
             })}
             <div className="flex justify-between border-t hairline pt-4 font-serif text-lg">
-              <span>Total value</span><span>{formatINR(subtotal)}</span>
+              <span>Price</span><span>On request</span>
             </div>
           </div>
           {error && <p className="mt-5 text-xs text-[#8a3a2a]">{error}</p>}

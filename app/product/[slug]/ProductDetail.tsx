@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Plate from "@/components/Plate";
 import { useCart } from "@/components/CartContext";
-import { Product, fabricById, formatINR } from "@/data/products";
+import { Product, fabricById } from "@/data/products";
 import { whatsappLink } from "@/data/brand";
 
 const SERVICEABLE_PREFIX = ["11", "12", "20", "40", "41", "56", "60", "70", "30", "50", "38", "39", "18", "26"];
@@ -85,7 +85,11 @@ export default function ProductDetail({ product }: { product: Product }) {
         <p className="mt-6 leading-relaxed text-umber">{product.story}</p>
 
         <div className="mt-8 border-t hairline pt-6">
-          <p className="font-serif text-3xl">{formatINR(product.price)}</p>
+          <p className="font-serif text-3xl">Price on request</p>
+          <p className="mt-2 text-sm text-umber">
+            Every piece is made to order, so we quote against your size, fabric and finish. Reserve it below and our
+            team will call you with the price.
+          </p>
         </div>
 
         {product.fabrics.length > 0 && (
