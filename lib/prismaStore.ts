@@ -1,7 +1,8 @@
 import { prisma } from "./prisma";
 import type { Product } from "@/data/products";
+import type { Project } from "@/data/projects";
 import type { Prisma } from "@prisma/client";
-import type { Order, StoredProduct, Enquiry, StoreImpl } from "./types";
+import type { Order, StoredProduct, StoredProject, Enquiry, StoreImpl } from "./types";
 
 // hyphenated app values <-> underscore MySQL enum identifiers
 const toDbOrderStatus = (s: Order["status"]) => s.replace("-", "_") as "new" | "in_atelier" | "delivered";
@@ -32,6 +33,19 @@ function mapProduct(row: Prisma.ProductGetPayload<object>): StoredProduct {
     dims: row.dims, wood: row.wood, fabrics: row.fabrics as string[], leadDays: row.leadDays,
     story: row.story, plate: row.plate, signature: row.signature,
     images: (row.images as string[] | null) ?? [],
+    active: row.active,
+    createdAt: row.createdAt.toISOString(),
+  };
+}
+
+function mapProject(row: Prisma.ProjectGetPayload<object>): StoredProject {
+  return {
+    slug: row.slug, title: row.title, location: row.location, year: row.year,
+    summary: row.summary, story: row.story,
+    scope: (row.scope as string[] | null) ?? [],
+    cover: row.cover,
+    images: (row.images as string[] | null) ?? [],
+    featured: row.featured,
     active: row.active,
     createdAt: row.createdAt.toISOString(),
   };
@@ -113,6 +127,51 @@ export const prismaStore: StoreImpl = {
   async deleteProduct(slug) {
     try {
       await prisma.product.delete({ where: { slug } });
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  async listProjects(includeInactive = false) {
+    const rows = await prisma.project.findMany({
+      where: includeInactive ? undefined : { active: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return rows.map(mapProject);
+  },
+  async getStoredProject(slug) {
+    const row = await prisma.project.findFirst({ where: { slug, active: true } });
+    return row ? mapProject(row) : null;
+  },
+  async createProject(input: Omit<Project, "slug">) {
+    const base = input.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "project";
+    let slug = base;
+    let n = 2;
+    while (await prisma.project.findUnique({ where: { slug } })) slug = `${base}-${n++}`;
+    const row = await prisma.project.create({
+      data: { ...input, slug, scope: input.scope, images: input.images ?? [], active: true },
+    });
+    return mapProject(row);
+  },
+  async updateProject(slug, patch) {
+    try {
+      const row = await prisma.project.update({
+        where: { slug },
+        data: {
+          ...patch,
+          scope: patch.scope as Prisma.InputJsonValue | undefined,
+          images: patch.images as Prisma.InputJsonValue | undefined,
+        },
+      });
+      return mapProject(row);
+    } catch {
+      return null;
+    }
+  },
+  async deleteProject(slug) {
+    try {
+      await prisma.project.delete({ where: { slug } });
       return true;
     } catch {
       return false;

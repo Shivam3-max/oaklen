@@ -5,14 +5,15 @@ import Ambience from "@/components/Ambience";
 import ProductCard from "@/components/ProductCard";
 import CategoryIndex from "@/components/home/CategoryIndex";
 import SplitWorlds from "@/components/home/SplitWorlds";
-import ShoppableRoom from "@/components/home/ShoppableRoom";
+import CompletedProjects from "@/components/home/CompletedProjects";
 import HomeHero from "@/components/home/HomeHero";
-import { listProducts, getSiteImages } from "@/lib/store";
+import { listProducts, listProjects, getSiteImages } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [products, img] = await Promise.all([listProducts(), getSiteImages()]);
+  const [products, projects, img] = await Promise.all([listProducts(), listProjects(), getSiteImages()]);
+  const featured = projects.filter((p) => p.featured).slice(0, 3);
   const signature = products.find((p) => p.slug === "aria-three-seater") ?? products[0];
   const arrivals = products.slice(1, 20).filter((p) => p.slug !== signature.slug).slice(0, 4);
   const journal = [
@@ -145,9 +146,9 @@ export default async function Home() {
           </Reveal>
           <Reveal delay={100}>
             <h2 className="section-title max-w-3xl text-4xl text-white lg:text-[3.5rem]">
-              48 hands. 21 days.
+              Fifteen craftsmen. Three floors.
               <br />
-              <span className="italic lowercase text-clay">one piece.</span>
+              <span className="italic lowercase text-clay">one workshop.</span>
             </h2>
           </Reveal>
 
@@ -155,10 +156,10 @@ export default async function Home() {
           <Reveal delay={160}>
             <div className="panel-dark mt-16 grid gap-10 p-10 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                ["90", "days seasoned", "Minimum, before a board is cut"],
-                ["21", "days on the bench", "Per commissioned piece"],
-                ["8", "year warranty", "Structural, in writing"],
-                ["48", "hands", "From timber yard to signature"],
+                ["15", "skilled craftsmen", "Frame to finish, in house"],
+                ["3", "floor workshop", "Cutting, frames, upholstery"],
+                ["9,000", "sq ft of making", "Our own manufacturing unit"],
+                ["A–Z", "nothing outsourced", "Every stage under one roof"],
               ].map(([n, t, d]) => (
                 <div key={t}>
                   <p className="serif-display text-6xl text-white lg:text-7xl">{n}</p>
@@ -171,10 +172,10 @@ export default async function Home() {
 
           <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              ["01", "Timber yard", "Teak, sheesham, oak and mango — seasoned a minimum of 90 days."],
-              ["02", "The joinery", "Mortise and tenon. Dovetail. No staples where a joint belongs."],
-              ["03", "Upholstery house", "Cut, stitched and buttoned by hand under north light."],
-              ["04", "The signature", "Every piece signed and numbered by the hands that built it."],
+              ["01", "Panel cutting", "Board squared and cut to size on the panel saw."],
+              ["02", "Frames & carcass", "Solid wood frames, jointed and braced by hand."],
+              ["03", "Springs, foam, cover", "Serpentine springs, foam cut to the frame, cover pulled by hand."],
+              ["04", "Finishing & checks", "Polish, hardware and a last inspection before it leaves."],
             ].map(([n, t, d], i) => (
               <Reveal key={n} delay={i * 90}>
                 <div>
@@ -194,21 +195,23 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 06 — Shoppable room */}
+      {/* 06 — Delivered projects */}
       <section className="relative">
         <Ambience variant="mist" src={img["home-room"]} />
         <div className="relative z-[1] mx-auto max-w-[1500px] px-6 py-24 lg:px-12 lg:py-32">
           <Reveal>
-            <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
+            <div className="mb-14 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="label rule mb-6 text-brass">In situ</p>
-                <h2 className="section-title text-4xl lg:text-5xl">Shop the room</h2>
+                <p className="label rule mb-6 text-brass">Delivered work</p>
+                <h2 className="section-title text-4xl lg:text-5xl">Successfully completed projects</h2>
               </div>
-              <p className="label text-[10px] text-umber">Touch a point · four pieces live here</p>
+              <Link href="/projects" className="label border-b border-espresso/30 pb-1 text-[10px] hover:border-brass hover:text-brass">
+                All projects →
+              </Link>
             </div>
           </Reveal>
           <Reveal delay={120}>
-            <ShoppableRoom products={products} image={img["home-room"]} />
+            <CompletedProjects projects={featured} />
           </Reveal>
         </div>
       </section>

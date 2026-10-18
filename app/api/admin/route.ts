@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   listOrders, setOrderStatus,
   listProducts, createProduct, updateProduct, deleteProduct,
+  listProjects, createProject, updateProject, deleteProject,
   listEnquiries, setEnquiryStatus, listSubscribers,
   getSiteImages, setSiteImage, clearSiteImage,
   databaseConnected,
 } from "@/lib/store";
 import { MAX_PRODUCT_IMAGES } from "@/data/products";
+
+const MAX_PROJECT_IMAGES = 10;
 
 const ADMIN_KEY = process.env.OAKLEN_ADMIN_KEY ?? "oaklen2026";
 
@@ -24,10 +27,10 @@ function imagesTooLarge(images: unknown): boolean {
 
 export async function GET(req: NextRequest) {
   if (!authorized(req)) return NextResponse.json({ error: "Wrong key." }, { status: 401 });
-  const [orders, products, enquiries, subscribers, siteImages] = await Promise.all([
-    listOrders(), listProducts(true), listEnquiries(), listSubscribers(), getSiteImages(),
+  const [orders, products, projects, enquiries, subscribers, siteImages] = await Promise.all([
+    listOrders(), listProducts(true), listProjects(true), listEnquiries(), listSubscribers(), getSiteImages(),
   ]);
-  return NextResponse.json({ orders, products, enquiries, subscribers, siteImages, dbConnected: databaseConnected });
+  return NextResponse.json({ orders, products, projects, enquiries, subscribers, siteImages, dbConnected: databaseConnected });
 }
 
 export async function POST(req: NextRequest) {
@@ -77,6 +80,41 @@ export async function POST(req: NextRequest) {
     case "product-delete": {
       const ok = await deleteProduct(body.slug);
       if (!ok) return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      return NextResponse.json({ ok: true });
+    }
+    case "project-create": {
+      const p = body.project ?? {};
+      if (!p.title) return NextResponse.json({ error: "A project needs a title." }, { status: 400 });
+      if (imagesTooLarge(p.images) || (typeof p.cover === "string" && p.cover.length > MAX_IMAGE_CHARS)) {
+        return NextResponse.json({ error: "A project image is too large — try a smaller file." }, { status: 400 });
+      }
+      const project = await createProject({
+        title: p.title,
+        location: p.location || "",
+        year: p.year || String(new Date().getFullYear()),
+        summary: p.summary || "",
+        story: p.story || "",
+        scope: Array.isArray(p.scope) ? p.scope.filter(Boolean).slice(0, 12) : [],
+        cover: p.cover || "",
+        images: Array.isArray(p.images) ? p.images.slice(0, MAX_PROJECT_IMAGES) : [],
+        featured: p.featured !== false,
+      });
+      return NextResponse.json({ project });
+    }
+    case "project-update": {
+      const patch = body.patch ?? {};
+      if (imagesTooLarge(patch.images) || (typeof patch.cover === "string" && patch.cover.length > MAX_IMAGE_CHARS)) {
+        return NextResponse.json({ error: "A project image is too large — try a smaller file." }, { status: 400 });
+      }
+      if (Array.isArray(patch.images)) patch.images = patch.images.slice(0, MAX_PROJECT_IMAGES);
+      if (Array.isArray(patch.scope)) patch.scope = patch.scope.filter(Boolean).slice(0, 12);
+      const project = await updateProject(body.slug, patch);
+      if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      return NextResponse.json({ project });
+    }
+    case "project-delete": {
+      const ok = await deleteProject(body.slug);
+      if (!ok) return NextResponse.json({ error: "Project not found" }, { status: 404 });
       return NextResponse.json({ ok: true });
     }
     case "enquiry-status": {

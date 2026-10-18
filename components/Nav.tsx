@@ -8,7 +8,7 @@ import { useCart } from "./CartContext";
 const LINKS = [
   { href: "/shop", label: "Collection" },
   { href: "/atelier", label: "Our Process" },
-  { href: "/lookbook", label: "Rooms" },
+  { href: "/projects", label: "Projects" },
   { href: "/tools", label: "Tools" },
   { href: "/rewards", label: "Rewards" },
 ];

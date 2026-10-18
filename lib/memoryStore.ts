@@ -1,5 +1,6 @@
 import { PRODUCTS as SEED_PRODUCTS, Product } from "@/data/products";
-import type { Order, StoredProduct, Enquiry, StoreImpl } from "./types";
+import { PROJECTS as SEED_PROJECTS, Project } from "@/data/projects";
+import type { Order, StoredProduct, StoredProject, Enquiry, StoreImpl } from "./types";
 
 // In-memory fallback used only when DATABASE_URL is not set (e.g. local runs
 // before the database is wired). Data lives in process memory and does not
@@ -8,6 +9,7 @@ import type { Order, StoredProduct, Enquiry, StoreImpl } from "./types";
 interface MemDB {
   orders: Order[];
   products: StoredProduct[];
+  projects: StoredProject[];
   enquiries: Enquiry[];
   subscribers: { email: string; createdAt: string }[];
   siteImages: Record<string, string>;
@@ -17,8 +19,12 @@ function seedProducts(): StoredProduct[] {
   return SEED_PRODUCTS.map((p) => ({ ...p, active: true, createdAt: "2026-05-01T09:00:00Z" }));
 }
 
+function seedProjects(): StoredProject[] {
+  return SEED_PROJECTS.map((p) => ({ ...p, active: true, createdAt: "2026-06-01T09:00:00Z" }));
+}
+
 function freshDB(): MemDB {
-  return { orders: [], products: seedProducts(), enquiries: [], subscribers: [], siteImages: {} };
+  return { orders: [], products: seedProducts(), projects: seedProjects(), enquiries: [], subscribers: [], siteImages: {} };
 }
 
 const g = globalThis as unknown as { __oaklenMemDB?: MemDB };
@@ -70,6 +76,33 @@ export const memoryStore: StoreImpl = {
     const before = db.products.length;
     db.products = db.products.filter((p) => p.slug !== slug);
     return db.products.length < before;
+  },
+
+  async listProjects(includeInactive = false) {
+    return includeInactive ? db.projects : db.projects.filter((p) => p.active);
+  },
+  async getStoredProject(slug) {
+    return db.projects.find((p) => p.slug === slug && p.active) ?? null;
+  },
+  async createProject(input: Omit<Project, "slug">) {
+    const base = input.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "project";
+    let slug = base;
+    let n = 2;
+    while (db.projects.some((p) => p.slug === slug)) slug = `${base}-${n++}`;
+    const project: StoredProject = { ...input, slug, active: true, createdAt: new Date().toISOString() };
+    db.projects.unshift(project);
+    return project;
+  },
+  async updateProject(slug, patch) {
+    const p = db.projects.find((x) => x.slug === slug);
+    if (!p) return null;
+    Object.assign(p, patch);
+    return p;
+  },
+  async deleteProject(slug) {
+    const before = db.projects.length;
+    db.projects = db.projects.filter((p) => p.slug !== slug);
+    return db.projects.length < before;
   },
 
   async createOrder(order) {

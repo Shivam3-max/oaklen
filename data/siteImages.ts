@@ -36,11 +36,6 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: "atelier-step-7", label: "Atelier — The rest", section: "Atelier", w: 1200, h: 900 },
   { key: "atelier-step-8", label: "Atelier — Signature", section: "Atelier", w: 1200, h: 900 },
 
-  // Lookbook
-  { key: "lookbook-hero", label: "Lookbook — The Ivory Room", section: "Lookbook", w: 2000, h: 1000, note: "Shoppable room with four hotspots." },
-  { key: "lookbook-2", label: "Lookbook — A Study in Walnut", section: "Lookbook", w: 1200, h: 900 },
-  { key: "lookbook-3", label: "Lookbook — The Long Table", section: "Lookbook", w: 1200, h: 900 },
-  { key: "lookbook-4", label: "Lookbook — Sleep, North-Facing", section: "Lookbook", w: 1200, h: 900 },
 
   // Journal
   { key: "journal-how-to-read-wood-grain", label: "Journal — Reading wood grain", section: "Journal", w: 1800, h: 1200 },

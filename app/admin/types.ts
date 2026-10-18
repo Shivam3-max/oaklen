@@ -1,10 +1,11 @@
-import type { StoredProduct, Order, Enquiry, Subscriber } from "@/lib/store";
+import type { StoredProduct, StoredProject, Order, Enquiry, Subscriber } from "@/lib/store";
 
-export type { StoredProduct, Order, Enquiry, Subscriber };
+export type { StoredProduct, StoredProject, Order, Enquiry, Subscriber };
 
 export interface AdminData {
   orders: Order[];
   products: StoredProduct[];
+  projects: StoredProject[];
   enquiries: Enquiry[];
   subscribers: Subscriber[];
   siteImages?: Record<string, string>;

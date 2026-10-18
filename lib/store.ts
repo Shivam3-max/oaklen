@@ -3,7 +3,7 @@ import { memoryStore } from "./memoryStore";
 import { BUNDLED_SITE_PHOTOS, BUNDLED_PRODUCT_PHOTOS } from "@/data/bundledPhotos";
 import type { StoreImpl, StoredProduct } from "./types";
 
-export type { Order, OrderItem, StoredProduct, Enquiry, Subscriber } from "./types";
+export type { Order, OrderItem, StoredProduct, StoredProject, Enquiry, Subscriber } from "./types";
 
 // With DATABASE_URL set, everything reads and writes the real MySQL database.
 // Without it, an in-memory fallback keeps the site running (data not saved).
@@ -37,6 +37,11 @@ export const getStoredProduct: StoreImpl["getStoredProduct"] = async (slug) => {
 export const createProduct = impl.createProduct;
 export const updateProduct = impl.updateProduct;
 export const deleteProduct = impl.deleteProduct;
+export const listProjects = impl.listProjects;
+export const getStoredProject = impl.getStoredProject;
+export const createProject = impl.createProject;
+export const updateProject = impl.updateProject;
+export const deleteProject = impl.deleteProject;
 export const createOrder = impl.createOrder;
 export const getOrder = impl.getOrder;
 export const ordersByPhone = impl.ordersByPhone;

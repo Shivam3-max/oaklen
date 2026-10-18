@@ -141,10 +141,10 @@ export default function HomeHero({ heroSrcs }: { heroSrcs: (string | undefined)[
       <div className="relative z-[2] border-t border-white/20">
         <div className="mx-auto flex max-w-[1500px] flex-wrap justify-center gap-x-10 gap-y-2 px-6 py-5 text-center lg:justify-between lg:px-12">
           {[
-            "Solid wood only",
-            "Made to order · 14–45 days",
-            "8-year structural warranty",
-            "Delivered & assembled, pan-India",
+            "Made in our own workshop",
+            "Customised to your size & fabric",
+            "Live workshop visits",
+            "Delivered & installed by our team",
           ].map((t) => (
             <span key={t} className="trust text-white/75">
               {t}

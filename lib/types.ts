@@ -1,4 +1,5 @@
 import type { Product } from "@/data/products";
+import type { Project } from "@/data/projects";
 
 export interface OrderItem {
   slug: string;
@@ -22,6 +23,11 @@ export interface Order {
 }
 
 export interface StoredProduct extends Product {
+  active: boolean;
+  createdAt: string;
+}
+
+export interface StoredProject extends Project {
   active: boolean;
   createdAt: string;
 }
@@ -52,6 +58,11 @@ export interface StoreImpl {
   createProduct(input: Omit<Product, "slug" | "plate">): Promise<StoredProduct>;
   updateProduct(slug: string, patch: Partial<Omit<StoredProduct, "slug" | "createdAt">>): Promise<StoredProduct | null>;
   deleteProduct(slug: string): Promise<boolean>;
+  listProjects(includeInactive?: boolean): Promise<StoredProject[]>;
+  getStoredProject(slug: string): Promise<StoredProject | null>;
+  createProject(input: Omit<Project, "slug">): Promise<StoredProject>;
+  updateProject(slug: string, patch: Partial<Omit<StoredProject, "slug" | "createdAt">>): Promise<StoredProject | null>;
+  deleteProject(slug: string): Promise<boolean>;
   createOrder(order: Omit<Order, "id" | "createdAt" | "status">): Promise<Order>;
   getOrder(id: string): Promise<Order | null>;
   ordersByPhone(phone: string): Promise<Order[]>;

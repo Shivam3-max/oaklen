@@ -23,7 +23,7 @@ export default function Footer() {
               <li><Link href="/shop?category=sleep" className="hover:text-brass">Sleep</Link></li>
               <li><Link href="/shop?category=dine" className="hover:text-brass">Dine</Link></li>
               <li><Link href="/shop?category=accents" className="hover:text-brass">Accents</Link></li>
-              <li><Link href="/lookbook" className="hover:text-brass">Rooms</Link></li>
+              <li><Link href="/projects" className="hover:text-brass">Projects</Link></li>
             </ul>
           </div>
           <div>
@@ -40,7 +40,7 @@ export default function Footer() {
             <p className="label mb-6 text-umber">More</p>
             <ul className="space-y-3 text-sm">
               <li><Link href="/rewards" className="hover:text-brass">Oaklen Rewards</Link></li>
-              <li><Link href="/lookbook" className="hover:text-brass">Rooms</Link></li>
+              <li><Link href="/projects" className="hover:text-brass">Projects</Link></li>
               <li><Link href="/tools" className="hover:text-brass">Tools</Link></li>
               <li><Link href="/account" className="hover:text-brass">Your Bookings</Link></li>
             </ul>
@@ -66,7 +66,7 @@ export default function Footer() {
       <div className="relative z-[1] border-t hairline">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-3 px-6 py-5 lg:px-12">
           <p className="label text-[10px] text-umber">© 2026 Oaklen Furniture · Made to be kept</p>
-          <p className="label text-[10px] text-umber">Solid wood · 8-year warranty · Pan-India delivery</p>
+          <p className="label text-[10px] text-umber">Made in our own workshop · Customised to your space · After-sales support</p>
         </div>
       </div>
     </footer>

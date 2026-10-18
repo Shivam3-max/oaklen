@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { BRAND } from "@/data/brand";
-import { listProducts } from "@/lib/store";
+import { listProducts, listProjects } from "@/lib/store";
 import { ARTICLES } from "@/data/journal";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = BRAND.domain;
   const staticPaths = [
-    "", "/shop", "/atelier", "/lookbook", "/tools", "/rewards", "/journal", "/visit",
+    "", "/shop", "/atelier", "/projects", "/tools", "/rewards", "/journal", "/visit",
     "/policies/privacy", "/policies/terms", "/policies/shipping", "/policies/refunds",
   ];
 
@@ -24,6 +24,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const products = await listProducts();
     for (const p of products) {
       entries.push({ url: `${base}/product/${p.slug}`, lastModified: now, changeFrequency: "monthly", priority: 0.8 });
+    }
+    const projects = await listProjects();
+    for (const pr of projects) {
+      entries.push({ url: `${base}/projects/${pr.slug}`, lastModified: now, changeFrequency: "monthly", priority: 0.8 });
     }
   } catch {
     /* db not connected during build — static paths still ship */

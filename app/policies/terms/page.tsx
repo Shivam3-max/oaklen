@@ -34,8 +34,10 @@ export default function TermsPage() {
 
       <h2 className="serif-display pt-4 text-2xl">Warranty</h2>
       <p>
-        Every frame carries an 8-year structural warranty against manufacturing defects under normal domestic use. This
-        does not cover ordinary wear, accidental damage, or the natural ageing of wood, leather and fabric.
+        Because we build in our own workshop, we stand behind what we make. The warranty term for a piece is confirmed
+        in writing when we quote it, and covers manufacturing defects under normal domestic use. It does not cover
+        ordinary wear, accidental damage, or the natural ageing of wood, leather and fabric. For anything that needs
+        attention after delivery, call us and our team will come out.
       </p>
 
       <h2 className="serif-display pt-4 text-2xl">Oaklen Rewards</h2>

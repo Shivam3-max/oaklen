@@ -16,6 +16,23 @@ export const BUNDLED_SITE_PHOTOS: Record<string, string> = {
   "home-split-classic": "/photos/home-split-classic.jpg",
   "home-cat-living": "/photos/home-cat-living.jpg",
   "home-cat-sleep": "/photos/home-cat-sleep.jpg",
+  "home-cat-dine": "/photos/home-cat-dine.jpg",
+  "home-cat-accents": "/photos/home-cat-accents.jpg",
+
+  "atelier-hero": "/photos/atelier-hero.jpg",
+  "atelier-step-1": "/photos/atelier-step-1.jpg",
+  "atelier-step-2": "/photos/atelier-step-2.jpg",
+  "atelier-step-3": "/photos/atelier-step-3.jpg",
+  "atelier-step-4": "/photos/atelier-step-4.jpg",
+  "atelier-step-5": "/photos/atelier-step-5.jpg",
+  "atelier-step-8": "/photos/atelier-step-8.jpg",
+
+  "journal-how-to-read-wood-grain": "/photos/journal-how-to-read-wood-grain.jpg",
+  "journal-the-case-for-slow-furniture": "/photos/journal-the-case-for-slow-furniture.jpg",
+  "journal-caring-for-boucle": "/photos/journal-caring-for-boucle.jpg",
+
+  "visit-showroom": "/photos/visit-showroom.jpg",
+  "trade-preview": "/photos/trade-preview.jpg",
 };
 
 // Keyed by product slug — used only when a product carries no images of its own.

@@ -5,10 +5,11 @@ import type { AdminData } from "./types";
 import OverviewTab from "./tabs/OverviewTab";
 import OrdersTab from "./tabs/OrdersTab";
 import ProductsTab from "./tabs/ProductsTab";
+import ProjectsTab from "./tabs/ProjectsTab";
 import InboxTab from "./tabs/InboxTab";
 import MediaTab from "./tabs/MediaTab";
 
-const TABS = ["overview", "bookings", "products", "media", "inbox"] as const;
+const TABS = ["overview", "bookings", "products", "projects", "media", "inbox"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AdminPage() {
@@ -108,6 +109,7 @@ export default function AdminPage() {
       {tab === "overview" && <OverviewTab data={data} />}
       {tab === "bookings" && <OrdersTab data={data} act={act} />}
       {tab === "products" && <ProductsTab data={data} act={act} />}
+      {tab === "projects" && <ProjectsTab data={data} act={act} />}
       {tab === "media" && <MediaTab data={data} act={act} />}
       {tab === "inbox" && <InboxTab data={data} act={act} />}
     </div>

@@ -1,5 +1,6 @@
 import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
+import ProcessIcon, { type ProcessIconKind } from "@/components/ProcessIcon";
 import Ambience from "@/components/Ambience";
 import Link from "next/link";
 import { getSiteImages } from "@/lib/store";
@@ -8,15 +9,18 @@ import { addressLine } from "@/data/brand";
 export const metadata = { title: "The Atelier — Oaklen" };
 export const dynamic = "force-dynamic";
 
-const STEPS = [
-  ["01", "Selection", "Every log is graded by hand at the yard. We keep one in five.", "workshop"],
-  ["02", "Seasoning", "Ninety days minimum in the drying sheds. Wood that hurries, warps.", "detail"],
-  ["03", "Drawing", "Full-scale drawings, still on paper. The pencil finds what the screen misses.", "craft"],
-  ["04", "Joinery", "Mortise and tenon, dovetail, wedge. Screws hold hardware, never structure.", "chair"],
-  ["05", "Upholstery", "Cut and stitched under north light, where colour tells the truth.", "sofa"],
-  ["06", "Finishing", "Oil and wax, rubbed in by hand, twice. Never a sprayed lacquer shell.", "centre"],
-  ["07", "The rest", "The piece sits for three days. Joints settle. We check it all again.", "nesting"],
-  ["08", "Signature", "Signed and numbered on the underside by the crew that built it.", "portrait"],
+// The real sequence on the Panchkula floor, as set out in the company deck:
+// panel cutting, frames, carcass work, hand assembly, springs, foam and
+// upholstery, then finishing and the final check.
+const STEPS: readonly (readonly [string, string, string, ProcessIconKind])[] = [
+  ["01", "Panel cutting", "Board is squared and cut to size on the panel saw. The first cut sets everything after it.", "cutting"],
+  ["02", "Frame making", "Frames are built in solid wood, jointed and braced before anything soft goes near them.", "frame"],
+  ["03", "Chair frames", "Chair and dining frames are shaped on their own bench, then stacked to wait for upholstery.", "chair"],
+  ["04", "Carcass work", "Carcasses for storage, beds and television units — cut, glued and clamped on the floor.", "carcass"],
+  ["05", "Hand assembly", "Parts come together by hand. Every joint is checked square before it moves on.", "assembly"],
+  ["06", "Springs & webbing", "Serpentine springs and webbing are set across the frame. This is what you feel in ten years.", "springs"],
+  ["07", "Foam & upholstery", "Foam is cut to the frame, then the cover is fitted, stitched and pulled by hand.", "foam"],
+  ["08", "Finishing & checks", "Polish, hardware, and a last inspection before anything leaves the floor.", "finishing"],
 ] as const;
 
 export default async function AtelierPage() {
@@ -26,14 +30,15 @@ export default async function AtelierPage() {
       <section className="mx-auto max-w-[1500px] px-6 lg:px-12">
         <Reveal>
           <p className="label mb-4 text-brass">The Atelier</p>
-          <h1 className="serif-display max-w-5xl text-6xl lg:text-[8rem]">
-            Slow is a <span className="italic text-walnut">feature.</span>
+          <h1 className="serif-display max-w-5xl text-6xl lg:text-[7rem]">
+            Where your furniture <span className="italic text-walnut">is made.</span>
           </h1>
         </Reveal>
         <Reveal delay={140}>
           <p className="mt-8 max-w-xl leading-relaxed text-umber">
-            Oaklen runs one workshop, not a supply chain. Forty-eight craftspeople, four wood species, two upholstery
-            benches and a rule we never break: nothing ships until the maker who built it would take it home.
+            Oaklen makes its own furniture. Fifteen craftsmen across a three-floor workshop take a piece from board to
+            polish — cutting, frames, springs, foam, upholstery and finishing, all under one roof. Nothing is
+            sub-contracted out, and you are welcome to come and watch it happen.
           </p>
         </Reveal>
       </section>
@@ -43,7 +48,7 @@ export default async function AtelierPage() {
           <Plate kind="workshop" ratio="16/7" plate={40} label={`The floor at ${addressLine}`} toneIndex={3} src={img["atelier-hero"]} alt="Oaklen workshop" />
         </Reveal>
         <div className="mt-6 grid gap-6 border-b hairline pb-10 text-center sm:grid-cols-4">
-          {[["48", "craftspeople"], ["90+", "days of seasoning"], ["8 yr", "structural warranty"], ["1 of 5", "logs make the cut"]].map(([n, d], i) => (
+          {[["15", "skilled craftsmen"], ["3", "floor workshop"], ["9,000", "sq ft of making"], ["A–Z", "built in house"]].map(([n, d], i) => (
             <Reveal key={d} delay={i * 70}>
               <div className="py-4">
                 <p className="serif-display text-5xl">{n}</p>
@@ -59,12 +64,17 @@ export default async function AtelierPage() {
           <h2 className="serif-display mb-14 text-5xl">Eight steps. No shortcuts.</h2>
         </Reveal>
         <div className="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map(([n, t, d, kind], i) => (
+          {STEPS.map(([n, t, d, icon], i) => (
             <Reveal key={n} delay={(i % 4) * 80}>
               <div>
-                <Plate kind={kind} ratio="4/3" toneIndex={i} bare src={img[`atelier-step-${i + 1}`]} alt={t} />
-                <p className="label mt-5 text-brass">{n}</p>
-                <p className="mt-2 font-serif text-2xl">{t}</p>
+                {/* `soft` only applies when no photograph exists — a line drawing next to
+                    real workshop shots reads as a mistake, a tonal field reads as pending. */}
+                <Plate kind="workshop" ratio="4/3" toneIndex={i} bare soft src={img[`atelier-step-${i + 1}`]} alt={t} />
+                <div className="mt-5 flex items-center gap-3">
+                  <ProcessIcon kind={icon} className="h-7 w-7 flex-none text-brass" />
+                  <p className="label text-brass">{n}</p>
+                </div>
+                <p className="mt-3 font-serif text-2xl">{t}</p>
                 <p className="mt-2 text-sm leading-relaxed text-umber">{d}</p>
               </div>
             </Reveal>
@@ -76,14 +86,15 @@ export default async function AtelierPage() {
         <Ambience variant="shadow" src={img["atelier-hero"]} feather={false} />
         <div className="relative z-[1] mx-auto max-w-[1500px] px-6 py-24 text-center lg:px-12">
           <Reveal>
-            <p className="serif-display mx-auto max-w-3xl text-4xl leading-tight lg:text-6xl">
-              “We don&apos;t sell furniture. We take <span className="italic text-clay">commissions.</span>”
+            <p className="serif-display mx-auto max-w-4xl text-4xl leading-tight lg:text-6xl">
+              Because we make it ourselves, we can{" "}
+              <span className="italic text-clay">stand behind every promise.</span>
             </p>
-            <p className="label mt-8 text-ivory/50">— The floor rule, painted above the door</p>
+            <p className="label mt-8 text-ivory/50">— Why Oaklen, in one line</p>
           </Reveal>
           <Reveal delay={150}>
-            <Link href="/shop" className="btn-line mt-12 !border-ivory !text-ivory hover:!bg-ivory hover:!text-espresso">
-              Book a piece
+            <Link href="/visit" className="btn-line mt-12 !border-ivory !text-ivory hover:!bg-ivory hover:!text-espresso">
+              Come and see it being made
             </Link>
           </Reveal>
         </div>

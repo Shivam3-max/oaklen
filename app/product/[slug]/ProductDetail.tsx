@@ -35,9 +35,9 @@ export default function ProductDetail({ product }: { product: Product }) {
   };
 
   const sections: [string, string, string][] = [
-    ["wood", "Wood & build", `${product.wood}. Joined with mortise-and-tenon joinery, finished by hand and inspected twice before it leaves the atelier.`],
+    ["wood", "Wood & build", `${product.wood}. Frame, springs, foam, upholstery and finishing are all done in our own Panchkula workshop, and the piece is inspected before it leaves the floor.`],
     ["care", "Care", "Dust with a dry cotton cloth. Keep two feet from direct heat. Fabric covers accept professional dry cleaning; wood asks only for a yearly wax."],
-    ["warranty", "Warranty & returns", "8-year structural warranty on every frame. Seven-day return window after delivery — we collect, no questions asked."],
+    ["warranty", "After delivery", "Support after delivery — if something needs attention, tell us and our team will come out. Ask us for the warranty terms on this piece when we quote it."],
   ];
 
   return (
