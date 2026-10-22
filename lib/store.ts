@@ -8,9 +8,45 @@ export type { Order, OrderItem, StoredProduct, StoredProject, Enquiry, Subscribe
 
 // With the DB_* variables set, everything reads and writes the real MySQL database.
 // Without it, an in-memory fallback keeps the site running (data not saved).
-export const databaseConnected = !!databaseUrl();
+export const databaseConfigured = !!databaseUrl();
 
-const impl: StoreImpl = databaseConnected ? prismaStore : memoryStore;
+// If the database is configured but unreachable (wrong password, tables not
+// created yet, server down), reads fall back to the in-memory catalogue so the
+// site keeps rendering instead of throwing a server error. Writes still fail,
+// so nobody is told a booking was saved when it wasn't.
+const READS = new Set<keyof StoreImpl>([
+  "getSiteImages", "listProducts", "getStoredProduct", "listProjects", "getStoredProject",
+  "getOrder", "ordersByPhone", "listOrders", "listEnquiries", "listSubscribers",
+]);
+
+let lastDbError: string | null = null;
+
+/** Short reason the database last failed, or null if it's working. */
+export const databaseError = () => lastDbError;
+
+function resilient(primary: StoreImpl, fallback: StoreImpl): StoreImpl {
+  const wrapped = {} as Record<string, unknown>;
+  for (const key of Object.keys(primary) as (keyof StoreImpl)[]) {
+    const run = primary[key] as (...a: unknown[]) => Promise<unknown>;
+    const backup = fallback[key] as (...a: unknown[]) => Promise<unknown>;
+    wrapped[key] = async (...args: unknown[]) => {
+      try {
+        const result = await run(...args);
+        lastDbError = null;
+        return result;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message.trim().split("\n").pop()! : String(err);
+        if (msg !== lastDbError) console.error(`[store] database error in ${key}: ${msg}`);
+        lastDbError = msg;
+        if (READS.has(key)) return backup(...args);
+        throw err;
+      }
+    };
+  }
+  return wrapped as unknown as StoreImpl;
+}
+
+const impl: StoreImpl = databaseConfigured ? resilient(prismaStore, memoryStore) : memoryStore;
 
 // Photography bundled in public/photos is the baseline; anything uploaded
 // through the admin overrides the bundled file of the same key.

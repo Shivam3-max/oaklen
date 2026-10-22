@@ -102,7 +102,9 @@ export default function AdminPage() {
 
       {data.dbConnected === false && (
         <p className="label mt-6 border border-brass bg-bone/60 px-4 py-3 text-[10px] text-walnut">
-          No database connected — changes here are not being saved. Set DB_HOST, DB_NAME, DB_USER and DB_PASSWORD to save your products, images and bookings.
+          {data.dbError
+            ? <>Database configured but not reachable — showing the starter catalogue and changes will fail. Check DB_HOST, DB_NAME, DB_USER and DB_PASSWORD. ({data.dbError})</>
+            : <>No database connected — changes here are not being saved. Set DB_HOST, DB_NAME, DB_USER and DB_PASSWORD to save your products, images and bookings.</>}
         </p>
       )}
 

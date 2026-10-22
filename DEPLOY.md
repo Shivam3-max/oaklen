@@ -9,6 +9,11 @@ cannot run it.
 hPanel → **Databases → MySQL Databases**: create a database and user, and note
 the database name, user, password and host (usually `localhost` on web hosting).
 
+Hostinger prefixes both names with your account id — use the **full** names
+exactly as hPanel lists them, e.g. `u123456789_oaklen`, not just `oaklen`.
+A build log line `P1000: Authentication failed` means the user, password or
+database name is wrong.
+
 ## 2. Create the Node.js app (Business / Cloud hosting)
 1. hPanel → **Add website → Node.js Apps** → import from GitHub (this repo,
    branch `main`) — or upload a zip of the repo without `node_modules`/`.next`.
@@ -29,7 +34,7 @@ the database name, user, password and host (usually `localhost` on web hosting).
    | `DB_PASSWORD` | database password — **required** (special characters are fine) |
    | `DB_PORT` | optional, defaults to `3306` |
    | `OAKLEN_ADMIN_KEY` | strong passcode for `/admin` — **required** (admin is locked without it) |
-   | `NEXT_PUBLIC_SITE_URL` | e.g. `https://oaklen.in` — **required** for correct SEO links |
+   | `NEXT_PUBLIC_SITE_URL` | e.g. `https://oaklenfurniture.in` — **required** for correct SEO links |
    | `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_STAFF` | optional, email alerts |
    | `NEXT_PUBLIC_GA_ID` | optional, Google Analytics |
 

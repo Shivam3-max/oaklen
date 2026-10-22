@@ -5,7 +5,7 @@ import {
   listProjects, createProject, updateProject, deleteProject,
   listEnquiries, setEnquiryStatus, listSubscribers,
   getSiteImages, setSiteImage, clearSiteImage,
-  databaseConnected,
+  databaseConfigured, databaseError,
 } from "@/lib/store";
 import { MAX_PRODUCT_IMAGES } from "@/data/products";
 
@@ -33,7 +33,10 @@ export async function GET(req: NextRequest) {
   const [orders, products, projects, enquiries, subscribers, siteImages] = await Promise.all([
     listOrders(), listProducts(true), listProjects(true), listEnquiries(), listSubscribers(), getSiteImages(),
   ]);
-  return NextResponse.json({ orders, products, projects, enquiries, subscribers, siteImages, dbConnected: databaseConnected });
+  return NextResponse.json({ orders, products, projects, enquiries, subscribers, siteImages,
+    dbConnected: databaseConfigured && !databaseError(),
+    dbError: databaseConfigured ? databaseError() : null,
+  });
 }
 
 export async function POST(req: NextRequest) {

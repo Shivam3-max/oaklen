@@ -10,6 +10,7 @@ export interface AdminData {
   subscribers: Subscriber[];
   siteImages?: Record<string, string>;
   dbConnected?: boolean;
+  dbError?: string | null;
 }
 
 export type Act = (body: Record<string, unknown>) => Promise<string | null>;

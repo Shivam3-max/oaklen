@@ -2,6 +2,19 @@
 // Update here and it changes across the whole site (footer, visit page,
 // checkout, WhatsApp links, structured data, legal pages).
 
+// Accepts "oaklenfurniture.in", "https://oaklenfurniture.in/" etc.; anything
+// unparseable falls back to the default so a typo can't crash every page.
+function siteUrl(raw?: string): string {
+  const fallback = "https://oaklenfurniture.in";
+  const v = (raw || "").trim();
+  if (!v) return fallback;
+  try {
+    return new URL(/^https?:\/\//i.test(v) ? v : `https://${v}`).origin;
+  } catch {
+    return fallback;
+  }
+}
+
 export const BRAND = {
   name: "Oaklen",
   legalName: "Oaklen Furniture",
@@ -22,7 +35,7 @@ export const BRAND = {
   gstin: "",
   // Public URL of the live site (SEO, sitemap, canonical links). Set
   // NEXT_PUBLIC_SITE_URL on the host; it is read at build time.
-  domain: (process.env.NEXT_PUBLIC_SITE_URL || "https://oaklen.in").replace(/\/+$/, ""),
+  domain: siteUrl(process.env.NEXT_PUBLIC_SITE_URL),
 } as const;
 
 export const addressLine = `${BRAND.address.line1}, ${BRAND.address.city}, ${BRAND.address.state} ${BRAND.address.pin}`;
