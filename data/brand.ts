@@ -20,7 +20,9 @@ export const BRAND = {
   hours: "Tue–Sun · 10:30 — 19:30",
   // Fill these in when available:
   gstin: "",
-  domain: "https://oaklen.vercel.app",
+  // Public URL of the live site (SEO, sitemap, canonical links). Set
+  // NEXT_PUBLIC_SITE_URL on the host; it is read at build time.
+  domain: (process.env.NEXT_PUBLIC_SITE_URL || "https://oaklen.in").replace(/\/+$/, ""),
 } as const;
 
 export const addressLine = `${BRAND.address.line1}, ${BRAND.address.city}, ${BRAND.address.state} ${BRAND.address.pin}`;

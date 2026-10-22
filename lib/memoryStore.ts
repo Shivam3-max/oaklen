@@ -2,9 +2,9 @@ import { PRODUCTS as SEED_PRODUCTS, Product } from "@/data/products";
 import { PROJECTS as SEED_PROJECTS, Project } from "@/data/projects";
 import type { Order, StoredProduct, StoredProject, Enquiry, StoreImpl } from "./types";
 
-// In-memory fallback used only when DATABASE_URL is not set (e.g. local runs
+// In-memory fallback used only when no database is configured (e.g. local runs
 // before the database is wired). Data lives in process memory and does not
-// persist — set DATABASE_URL for the real, saved store.
+// persist — set the DB_* variables for the real, saved store.
 
 interface MemDB {
   orders: Order[];

@@ -11,13 +11,16 @@ import { MAX_PRODUCT_IMAGES } from "@/data/products";
 
 const MAX_PROJECT_IMAGES = 10;
 
-const ADMIN_KEY = process.env.OAKLEN_ADMIN_KEY ?? "oaklen2026";
+// In production the passcode must come from the environment — never fall
+// back to the well-known dev default on a live site.
+const ADMIN_KEY =
+  process.env.OAKLEN_ADMIN_KEY || (process.env.NODE_ENV === "production" ? "" : "oaklen2026");
 
 // generous ceiling for one client-resized data URL (~a few hundred KB of base64)
 const MAX_IMAGE_CHARS = 3_000_000;
 
 function authorized(req: NextRequest) {
-  return req.headers.get("x-admin-key") === ADMIN_KEY;
+  return !!ADMIN_KEY && req.headers.get("x-admin-key") === ADMIN_KEY;
 }
 
 function imagesTooLarge(images: unknown): boolean {

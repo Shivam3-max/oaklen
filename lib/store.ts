@@ -1,15 +1,16 @@
 import { prismaStore } from "./prismaStore";
 import { memoryStore } from "./memoryStore";
+import { databaseUrl } from "./dbUrl";
 import { BUNDLED_SITE_PHOTOS, BUNDLED_PRODUCT_PHOTOS } from "@/data/bundledPhotos";
 import type { StoreImpl, StoredProduct } from "./types";
 
 export type { Order, OrderItem, StoredProduct, StoredProject, Enquiry, Subscriber } from "./types";
 
-// With DATABASE_URL set, everything reads and writes the real MySQL database.
+// With the DB_* variables set, everything reads and writes the real MySQL database.
 // Without it, an in-memory fallback keeps the site running (data not saved).
-const impl: StoreImpl = process.env.DATABASE_URL ? prismaStore : memoryStore;
+export const databaseConnected = !!databaseUrl();
 
-export const databaseConnected = !!process.env.DATABASE_URL;
+const impl: StoreImpl = databaseConnected ? prismaStore : memoryStore;
 
 // Photography bundled in public/photos is the baseline; anything uploaded
 // through the admin overrides the bundled file of the same key.

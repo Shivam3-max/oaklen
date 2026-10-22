@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
+import { databaseUrl } from "../lib/dbUrl";
 import { PRODUCTS } from "../data/products";
 import { PROJECTS } from "../data/projects";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ datasources: { db: { url: databaseUrl() } } });
 
 async function main() {
   const productCount = await prisma.product.count();
