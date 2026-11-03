@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Mulish } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { CartProvider } from "@/components/CartContext";
 import Nav from "@/components/Nav";
@@ -12,18 +12,20 @@ import { BRAND } from "@/data/brand";
 // Display face — Montserrat Light, tracked tight. Body — Mulish.
 // This pairing is the one holzer.in uses and it carries most of the
 // boutique feel; the old Fraunces/Instrument pair read much warmer.
-const montserrat = Montserrat({
-  subsets: ["latin"],
+// Bundled in app/fonts (variable, latin, SIL OFL) rather than next/font/google,
+// which downloads from Google at build time and failed on Hostinger's builder.
+const montserrat = localFont({
+  src: [
+    { path: "./fonts/montserrat-latin-wght-normal.woff2", weight: "200 600", style: "normal" },
+    { path: "./fonts/montserrat-latin-wght-italic.woff2", weight: "200 600", style: "italic" },
+  ],
   variable: "--font-montserrat",
-  weight: ["200", "300", "400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
-const mulish = Mulish({
-  subsets: ["latin"],
+const mulish = localFont({
+  src: [{ path: "./fonts/mulish-latin-wght-normal.woff2", weight: "300 600", style: "normal" }],
   variable: "--font-mulish",
-  weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
