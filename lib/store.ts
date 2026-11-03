@@ -1,8 +1,11 @@
 import { prismaStore } from "./prismaStore";
 import { memoryStore } from "./memoryStore";
 import { databaseUrl } from "./dbUrl";
+import { toMedia, type MediaKind } from "./media";
 import { BUNDLED_SITE_PHOTOS, BUNDLED_PRODUCT_PHOTOS } from "@/data/bundledPhotos";
 import type { StoreImpl, StoredProduct } from "./types";
+
+import type { StoredProject } from "./types";
 
 export type { Order, OrderItem, StoredProduct, StoredProject, Enquiry, Subscriber } from "./types";
 
@@ -50,12 +53,10 @@ const impl: StoreImpl = databaseConfigured ? resilient(prismaStore, memoryStore)
 
 // Photography bundled in public/photos is the baseline; anything uploaded
 // through the admin overrides the bundled file of the same key.
-export const getSiteImages: StoreImpl["getSiteImages"] = async () => ({
-  ...BUNDLED_SITE_PHOTOS,
-  ...(await impl.getSiteImages()),
-});
-export const setSiteImage = impl.setSiteImage;
-export const clearSiteImage = impl.clearSiteImage;
+async function siteImagesRaw() {
+  return { ...BUNDLED_SITE_PHOTOS, ...(await impl.getSiteImages()) };
+}
+
 // Same rule for products: a bundled photo fills in only where the product
 // has none of its own, so an admin upload always wins.
 function withBundledPhoto<T extends StoredProduct>(p: T): T {
@@ -64,18 +65,56 @@ function withBundledPhoto<T extends StoredProduct>(p: T): T {
   return bundled ? { ...p, images: [bundled] } : p;
 }
 
+// Public reads swap stored data: URLs for /media links (see lib/media.ts).
+function publicProduct<T extends StoredProduct>(p: T): T {
+  const withPhoto = withBundledPhoto(p);
+  return { ...withPhoto, images: (withPhoto.images ?? []).map((src, i) => toMedia("p", p.slug, i, src)) };
+}
+
+function publicProject<T extends StoredProject>(p: T): T {
+  return {
+    ...p,
+    cover: p.cover ? toMedia("j", p.slug, "cover", p.cover) : p.cover,
+    images: (p.images ?? []).map((src, i) => toMedia("j", p.slug, i, src)),
+  };
+}
+
+export const getSiteImages: StoreImpl["getSiteImages"] = async () =>
+  Object.fromEntries(Object.entries(await siteImagesRaw()).map(([k, src]) => [k, toMedia("s", k, 0, src)]));
+export const setSiteImage = impl.setSiteImage;
+export const clearSiteImage = impl.clearSiteImage;
+
 export const listProducts: StoreImpl["listProducts"] = async (includeInactive) =>
-  (await impl.listProducts(includeInactive)).map(withBundledPhoto);
+  (await impl.listProducts(includeInactive)).map(publicProduct);
 
 export const getStoredProduct: StoreImpl["getStoredProduct"] = async (slug) => {
   const p = await impl.getStoredProduct(slug);
-  return p ? withBundledPhoto(p) : null;
+  return p ? publicProduct(p) : null;
 };
 export const createProduct = impl.createProduct;
 export const updateProduct = impl.updateProduct;
 export const deleteProduct = impl.deleteProduct;
-export const listProjects = impl.listProjects;
-export const getStoredProject = impl.getStoredProject;
+export const listProjects: StoreImpl["listProjects"] = async (includeInactive) =>
+  (await impl.listProjects(includeInactive)).map(publicProject);
+export const getStoredProject: StoreImpl["getStoredProject"] = async (slug) => {
+  const p = await impl.getStoredProject(slug);
+  return p ? publicProject(p) : null;
+};
+
+// The admin edits the stored originals, so it reads them unchanged.
+export const adminListProducts = async (includeInactive?: boolean) =>
+  (await impl.listProducts(includeInactive)).map(withBundledPhoto);
+export const adminListProjects = impl.listProjects;
+export const adminGetSiteImages = siteImagesRaw;
+
+/** The stored photo behind a /media URL, or null. */
+export async function getMediaSource(kind: MediaKind, id: string, index: string): Promise<string | null> {
+  if (kind === "s") return (await impl.getSiteImages())[id] ?? null;
+  if (kind === "p") return (await impl.getStoredProduct(id))?.images?.[Number(index)] ?? null;
+  const project = await impl.getStoredProject(id);
+  if (!project) return null;
+  return index === "cover" ? project.cover || null : project.images?.[Number(index)] ?? null;
+}
 export const createProject = impl.createProject;
 export const updateProject = impl.updateProject;
 export const deleteProject = impl.deleteProject;

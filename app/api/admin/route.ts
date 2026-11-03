@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   listOrders, setOrderStatus,
-  listProducts, createProduct, updateProduct, deleteProduct,
-  listProjects, createProject, updateProject, deleteProject,
+  adminListProducts, createProduct, updateProduct, deleteProduct,
+  adminListProjects, createProject, updateProject, deleteProject,
   listEnquiries, setEnquiryStatus, listSubscribers,
-  getSiteImages, setSiteImage, clearSiteImage,
+  adminGetSiteImages, setSiteImage, clearSiteImage,
   databaseConfigured, databaseError,
 } from "@/lib/store";
 import { MAX_PRODUCT_IMAGES } from "@/data/products";
@@ -31,7 +31,7 @@ function imagesTooLarge(images: unknown): boolean {
 export async function GET(req: NextRequest) {
   if (!authorized(req)) return NextResponse.json({ error: "Wrong key." }, { status: 401 });
   const [orders, products, projects, enquiries, subscribers, siteImages] = await Promise.all([
-    listOrders(), listProducts(true), listProjects(true), listEnquiries(), listSubscribers(), getSiteImages(),
+    listOrders(), adminListProducts(true), adminListProjects(true), listEnquiries(), listSubscribers(), adminGetSiteImages(),
   ]);
   return NextResponse.json({ orders, products, projects, enquiries, subscribers, siteImages,
     dbConnected: databaseConfigured && !databaseError(),
