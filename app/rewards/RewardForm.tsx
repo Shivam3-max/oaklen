@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackMeta } from "@/lib/metaPixel";
 
 export default function RewardForm() {
   const [form, setForm] = useState({ name: "", phone: "", email: "" });
@@ -22,6 +23,7 @@ export default function RewardForm() {
         body: JSON.stringify({ kind: "reward", name: form.name, phone: form.phone, note: form.email ? `Email: ${form.email}` : undefined }),
       });
       if (!res.ok) throw new Error("Something went wrong");
+      trackMeta("CompleteRegistration", { content_name: "Oaklen Rewards" });
       setSent(true);
     } catch (e) {
       setError((e as Error).message);

@@ -27,7 +27,7 @@ export default function CookieConsent() {
     <div className="fixed inset-x-0 bottom-0 z-[120] border-t hairline bg-ivory/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-4 px-6 py-4 lg:px-12">
         <p className="max-w-2xl text-[13px] leading-relaxed text-umber">
-          We use a few cookies to keep your cart working. See our{" "}
+          We use cookies to keep your cart working and, through the Meta Pixel, to measure and show our ads. See our{" "}
           <Link href="/policies/privacy" className="text-brass underline underline-offset-4">
             privacy policy
           </Link>

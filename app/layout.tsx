@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import Atmosphere from "@/components/Atmosphere";
 import CookieConsent from "@/components/CookieConsent";
 import Analytics from "@/components/Analytics";
+import MetaPixel from "@/components/MetaPixel";
 import { BRAND } from "@/data/brand";
 
 // Display face — Montserrat Light, tracked tight. Body — Mulish.
@@ -70,6 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${montserrat.variable} ${mulish.variable}`}>
         <Analytics />
+        <MetaPixel />
         <CartProvider>
           <Atmosphere />
           <Nav />

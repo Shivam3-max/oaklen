@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
 import { fabricById } from "@/data/products";
+import { trackMeta } from "@/lib/metaPixel";
 
 export default function CheckoutPage() {
   const { lines, clear, product } = useCart();
@@ -35,6 +36,7 @@ export default function CheckoutPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Something went wrong");
+      trackMeta("Lead", { content_name: "Website booking" });
       clear();
       router.push(`/checkout/success?order=${data.id}`);
     } catch (e) {

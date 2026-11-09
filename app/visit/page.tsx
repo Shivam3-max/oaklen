@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Reveal from "@/components/Reveal";
 import Plate from "@/components/Plate";
 import { BRAND, addressLine, whatsappLink } from "@/data/brand";
+import { trackMeta } from "@/lib/metaPixel";
 
 export default function VisitPage() {
   const [sent, setSent] = useState(false);
@@ -22,11 +23,12 @@ export default function VisitPage() {
     if (!form.name || !form.phone || busy) return;
     setBusy(true);
     try {
-      await fetch("/api/enquiries", {
+      const res = await fetch("/api/enquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind: "consultation", name: form.name, phone: form.phone, note: form.about }),
       });
+      if (res.ok) trackMeta("Lead", { content_name: "Showroom consultation" });
       setSent(true);
     } finally {
       setBusy(false);
